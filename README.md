@@ -52,8 +52,12 @@ and a fixture path relative to that directory.
 | `missing_definition` | Is the time basis and eligible population specified? | Ask concrete questions and return `needs_clarification`. |
 
 ```sh
-.venv/bin/data-investigator run --fixture data-investigation-agent/fixtures/delivery_slip --out runs/delay-demo
-.venv/bin/data-investigator run --fixture data-investigation-agent/fixtures/missing_definition --out runs/clarification-demo
+.venv/bin/data-investigator run \
+  --fixture data-investigation-agent/fixtures/delivery_slip \
+  --out runs/delay-demo
+.venv/bin/data-investigator run \
+  --fixture data-investigation-agent/fixtures/missing_definition \
+  --out runs/clarification-demo
 ```
 
 These fixtures are original synthetic examples. The scripted driver knows their
