@@ -1,0 +1,166 @@
+{
+  "version": "1.0",
+  "synthetic": true,
+  "description": "Original small local development data. No employer/patient data.",
+  "as_of_utc": "2026-10-05T00:00:00Z",
+  "tables": [
+    {
+      "name": "orders",
+      "path": "orders.csv",
+      "grain": "One row per order",
+      "columns": [
+        {
+          "name": "order_id",
+          "type": "TEXT"
+        },
+        {
+          "name": "created_at_utc",
+          "type": "TEXT"
+        },
+        {
+          "name": "promised_delivery_at_utc",
+          "type": "TEXT"
+        },
+        {
+          "name": "completed_at_utc",
+          "type": "TEXT"
+        },
+        {
+          "name": "order_status",
+          "type": "TEXT"
+        },
+        {
+          "name": "warehouse_id",
+          "type": "TEXT"
+        },
+        {
+          "name": "sales_channel",
+          "type": "TEXT"
+        },
+        {
+          "name": "ordered_units",
+          "type": "INTEGER"
+        },
+        {
+          "name": "cancelled_at_utc",
+          "type": "TEXT"
+        },
+        {
+          "name": "updated_at_utc",
+          "type": "TEXT"
+        }
+      ]
+    },
+    {
+      "name": "shipments",
+      "path": "shipments.csv",
+      "grain": "One row per shipment",
+      "columns": [
+        {
+          "name": "shipment_id",
+          "type": "TEXT"
+        },
+        {
+          "name": "order_id",
+          "type": "TEXT"
+        },
+        {
+          "name": "shipped_at_utc",
+          "type": "TEXT"
+        },
+        {
+          "name": "delivered_at_utc",
+          "type": "TEXT"
+        },
+        {
+          "name": "shipment_status",
+          "type": "TEXT"
+        },
+        {
+          "name": "shipped_units",
+          "type": "INTEGER"
+        },
+        {
+          "name": "carrier_code",
+          "type": "TEXT"
+        },
+        {
+          "name": "updated_at_utc",
+          "type": "TEXT"
+        }
+      ]
+    },
+    {
+      "name": "warehouses",
+      "path": "warehouses.csv",
+      "grain": "One row per warehouse",
+      "columns": [
+        {
+          "name": "warehouse_id",
+          "type": "TEXT"
+        },
+        {
+          "name": "warehouse_name",
+          "type": "TEXT"
+        },
+        {
+          "name": "region_code",
+          "type": "TEXT"
+        }
+      ]
+    },
+    {
+      "name": "reporting_periods",
+      "path": "reporting_periods.csv",
+      "grain": "One row per reporting_period",
+      "columns": [
+        {
+          "name": "period_id",
+          "type": "TEXT"
+        },
+        {
+          "name": "label",
+          "type": "TEXT"
+        },
+        {
+          "name": "starts_at_utc",
+          "type": "TEXT"
+        },
+        {
+          "name": "ends_at_utc",
+          "type": "TEXT"
+        }
+      ]
+    },
+    {
+      "name": "dashboard_observations",
+      "path": "dashboard_observations.csv",
+      "grain": "One row per dashboard_observation",
+      "columns": [
+        {
+          "name": "period_id",
+          "type": "TEXT"
+        },
+        {
+          "name": "metric_key",
+          "type": "TEXT"
+        },
+        {
+          "name": "metric_value",
+          "type": "REAL"
+        },
+        {
+          "name": "observed_at_utc",
+          "type": "TEXT"
+        }
+      ]
+    }
+  ],
+  "metric": {
+    "grain": "one order",
+    "timezone": "UTC",
+    "time_basis": null,
+    "cancelled_orders": null,
+    "unfinished_due_orders": "late"
+  }
+}

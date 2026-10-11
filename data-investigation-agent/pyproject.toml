@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "workflow-data-investigator"
+dynamic = ["version"]
+description = "Bounded read-only investigation tools with observable actions and offline evidence replay"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+dependencies = []
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python :: 3",
+  "Operating System :: POSIX :: Linux",
+  "Topic :: Scientific/Engineering :: Information Analysis",
+]
+
+[project.urls]
+# Proposed destinations only; publication is pending.
+"Repository (pending)" = "https://github.com/CamusFSY/workflow-data-investigator"
+"Issues (pending)" = "https://github.com/CamusFSY/workflow-data-investigator/issues"
+
+[project.scripts]
+data-investigator = "investigator.cli:main"
+
+[tool.setuptools]
+packages = ["investigator"]
+
+[tool.setuptools.dynamic]
+version = {attr = "investigator.__version__"}

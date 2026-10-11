@@ -1,0 +1,3 @@
+record_id,recorded_at_utc,item_count,sample_value
+ROW-1,2026-10-05T00:00:00Z,2,1.5
+ROW-2,,3,

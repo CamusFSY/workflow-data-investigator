@@ -1,0 +1,19 @@
+{
+  "version": "1.0",
+  "synthetic": true,
+  "tables": [{
+    "name": "rate_samples",
+    "path": "rate_samples.csv",
+    "grain": "One fictional aggregate per cohort and period; not a validated metric contract",
+    "primary_key": ["cohort", "period"],
+    "foreign_keys": [],
+    "columns": [
+      {"name": "cohort", "type": "TEXT"},
+      {"name": "period", "type": "TEXT"},
+      {"name": "completed", "type": "INTEGER"},
+      {"name": "timely", "type": "INTEGER"},
+      {"name": "cancelled", "type": "INTEGER"},
+      {"name": "total", "type": "INTEGER"}
+    ]
+  }]
+}

@@ -1,0 +1,96 @@
+import argparse
+import json
+import sys
+from pathlib import Path
+
+from . import __version__
+from .loop import run
+
+GOAL = "上周准时交付率下降，判断是否真的延误，给我可复跑的证据。"
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(
+        prog="data-investigator",
+        description="Read-only data investigation tools and offline evidence replay. Synthetic data only.",
+    )
+    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
+    sub = parser.add_subparsers(dest="command", required=True)
+    demo = sub.add_parser("run", help="Run the explicitly scripted demo; no API key or model call")
+    demo.add_argument("--fixture", required=True)
+    demo.add_argument("--out", required=True, help="New output directory, never overwritten")
+    demo.add_argument("--goal", default=GOAL)
+    demo.add_argument("--mode", choices=["mock", "live"], default="mock")
+    demo.add_argument("--inject-schema-error", action="store_true", help="Mock-only error exercise")
+    demo.add_argument("--max-steps", type=int, default=24, help="Maximum model turns (1..40)")
+    demo.add_argument("--max-tool-actions", type=int, help="Total tool action cap (1..40); defaults to max-steps")
+    demo.add_argument("--max-seconds", type=int, default=60)
+    replay = sub.add_parser("replay", help="Verify recorded tool results offline, including errors")
+    replay.add_argument("directory")
+    inspect = sub.add_parser("inspect", help="Load/inspect a public bundle without a provider")
+    inspect.add_argument("--fixture", required=True)
+    inspect.add_argument("--out", required=True)
+    args = parser.parse_args(argv)
+    if args.command == "replay":
+        from .replay import verify
+        try:
+            verify(args.directory)
+        except OSError as exc:
+            print(f"REPLAY INPUT ERROR: {exc}", file=sys.stderr)
+            return 2
+        except (ValueError, AssertionError, KeyError, TypeError) as exc:
+            print(f"REPLAY VERIFICATION FAILED: {exc}", file=sys.stderr)
+            return 1
+        return 0
+    if args.command == "inspect":
+        from .bundle import prepare_bundle
+        from .runtime import Runtime
+        try:
+            manifest = prepare_bundle(args.fixture, args.out)
+            output = Path(args.out).absolute()
+            schema = Runtime(output / "input").call("schema", "inspect_schema", {})
+            (output / "input_manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
+            (output / "schema.json").write_text(json.dumps(schema, indent=2) + "\n")
+            print("DATA LOAD ONLY · SYNTHETIC DATA · no provider / no Agent success claim")
+            print(json.dumps(schema, ensure_ascii=False, indent=2))
+            return 0 if schema["ok"] else 1
+        except Exception as exc:
+            print(f"SETUP ERROR: {type(exc).__name__}: {exc}", file=sys.stderr)
+            return 2
+    if args.mode == "live":
+        print("LIVE_TRANSPORT_REQUIRED: This CLI has no model transport. Integrate a provider via "
+              "the Python API and supply your authorized transport and existing budget reference. "
+              "The CLI does not read credentials or make API calls. See docs/provider-integration.md.",
+              file=sys.stderr)
+        return 2
+    from .mock import ScriptedMock
+    print("=== SCRIPTED MOCK · SYNTHETIC DATA · 0 API CALLS ===", flush=True)
+    print("仅验证工具/反馈/交付闭环；不是模型自主成功证明。", flush=True)
+    print("目标：" + args.goal, flush=True)
+
+    def show(event):
+        result = event["result"]
+        print(f"\n[{event['evidence_id']}] {event['tool']} "
+              f"{'OK' if result['ok'] else 'ERROR'} — {event['public_note']}", flush=True)
+        if not result["ok"]:
+            print(json.dumps(result["error"], ensure_ascii=False), flush=True)
+        elif event["tool"] in {"query", "analyze"}:
+            print(json.dumps(result["data"], ensure_ascii=False)[:1000], flush=True)
+
+    try:
+        outcome = run(args.goal, args.fixture, args.out,
+                      ScriptedMock(args.inject_schema_error), args.max_steps, args.max_seconds, show,
+                      max_tool_actions=args.max_tool_actions)
+    except Exception as exc:
+        print(f"SETUP ERROR: {type(exc).__name__}: {exc}", file=sys.stderr)
+        return 2
+    print("\n状态：" + outcome["status"], flush=True)
+    if outcome["answer"]:
+        for condition in outcome["answer"].get("conditions", []):
+            print("适用假设（未经确认）：" + condition, flush=True)
+        for question in outcome["answer"]["questions"]:
+            print("需确认：" + question, flush=True)
+        print(outcome["answer"]["summary"], flush=True)
+    print(f"证据交付物：{args.out}/report.html · investigation.ipynb · trace.jsonl", flush=True)
+    print(f"复跑：python {args.out}/replay.py", flush=True)
+    return 1 if outcome["status"] == "failed" else 0

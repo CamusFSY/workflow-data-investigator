@@ -1,0 +1,49 @@
+{
+  "catalog_version": "1.0",
+  "dataset_name": "metadata-contract-probe",
+  "snapshot_at_utc": "2026-10-05T00:00:00Z",
+  "timezone": "UTC",
+  "sql_dialect": "SQLite",
+  "provenance": {
+    "type": "synthetic",
+    "authorship": "AI-authored original fictional operational data",
+    "real_enterprise_data": false,
+    "personal_data": false
+  },
+  "csv": {
+    "encoding": "UTF-8",
+    "header": true,
+    "delimiter": ",",
+    "null_encoding": "empty field",
+    "timestamp_format": "%Y-%m-%dT%H:%M:%SZ"
+  },
+  "comparison": {
+    "reference_period_id": "2026-W39",
+    "focus_period_id": "2026-W40"
+  },
+  "documents": [
+    {
+      "path": "metric_definition.md",
+      "title": "Weekly on-time delivery metric"
+    },
+    {
+      "path": "dashboard_query.sql",
+      "title": "Deployed weekly card query"
+    }
+  ],
+  "tables": [
+    {
+      "name": "observations",
+      "path": "observations.csv",
+      "grain": "One row per fictional import probe; no delivery diagnosis",
+      "primary_key": ["record_id"],
+      "foreign_keys": [],
+      "columns": [
+        {"name": "record_id", "type": "TEXT", "nullable": false},
+        {"name": "recorded_at_utc", "type": "TEXT", "nullable": true},
+        {"name": "item_count", "type": "INTEGER", "nullable": false},
+        {"name": "sample_value", "type": "REAL", "nullable": true}
+      ]
+    }
+  ]
+}

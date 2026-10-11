@@ -1,0 +1,2 @@
+Compare the selected synthetic count ratios, keep their source columns distinct,
+and state which business definition still needs approval. No causal conclusion.

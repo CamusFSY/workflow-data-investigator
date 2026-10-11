@@ -1,0 +1,15 @@
+name: Use case or improvement
+description: Describe a concrete workflow the project could support.
+body:
+  - type: textarea
+    id: task
+    attributes:
+      label: What task are you trying to complete?
+      description: Explain the input, desired output and current workaround. Use synthetic examples.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: What would demonstrate the improvement?
+      description: Suggest a checkable example, without assuming a particular implementation.

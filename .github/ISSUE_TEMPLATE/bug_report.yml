@@ -1,0 +1,27 @@
+name: Reproducible bug
+description: Report a tool, installation, replay or documentation failure using synthetic data.
+body:
+  - type: markdown
+    attributes:
+      value: 'For security issues, follow SECURITY.md. Do not attach credentials, private data, or internal traces.'
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Commit, Python version and operating system.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Minimal reproduction
+      description: Include the exact command and a small synthetic fixture or an existing fixture name.
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Expected and actual behavior
+      description: Include the exit code and a redacted error. State whether this is scripted, replayed or model-driven.
+    validations:
+      required: true
