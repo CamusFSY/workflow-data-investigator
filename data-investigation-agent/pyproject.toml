@@ -19,9 +19,8 @@ classifiers = [
 ]
 
 [project.urls]
-# Proposed destinations only; publication is pending.
-"Repository (pending)" = "https://github.com/CamusFSY/workflow-data-investigator"
-"Issues (pending)" = "https://github.com/CamusFSY/workflow-data-investigator/issues"
+Repository = "https://github.com/CamusFSY/workflow-data-investigator"
+Issues = "https://github.com/CamusFSY/workflow-data-investigator/issues"
 
 [project.scripts]
 data-investigator = "investigator.cli:main"
