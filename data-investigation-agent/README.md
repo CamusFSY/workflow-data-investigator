@@ -4,9 +4,10 @@ Read-only CSV/SQLite tools, an observable provider loop, and replayable evidence
 The included demonstrations use **synthetic data and an explicitly scripted
 provider**. Runtime dependencies: Python 3.11+ standard library on Linux.
 
-**Publication pending.** Proposed repository:
-`CamusFSY/workflow-data-investigator`. The source archive is a local candidate;
-the proposed repository and package release are not yet available.
+**Public source:** [CamusFSY/workflow-data-investigator](https://github.com/CamusFSY/workflow-data-investigator).
+The source was published on 2026-10-11; no package-index release has been made.
+See [publication evidence](../docs/public-release.md) for the initial commit and
+its successful hosted offline checks.
 
 ## Quickstart
 

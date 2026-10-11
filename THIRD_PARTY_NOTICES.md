@@ -1,6 +1,6 @@
 # Component provenance and third-party notices
 
-This local product candidate contains the investigator tools, their tests,
+This source repository contains the investigator tools, their tests,
 documentation and original synthetic development fixtures. The project source
 and original fixture files are distributed under the accompanying Apache-2.0
 [LICENSE](LICENSE). The package carries the same complete license text.
@@ -27,13 +27,13 @@ only the standard library.
 
 ## Explicitly excluded material
 
-This candidate includes no legacy research package, upstream task/checker copy,
+This repository includes no legacy research package, upstream task/checker copy,
 external CDN cache, prior model-run bundle, uploaded document or media archive.
 In particular, MCPMark task/checker copies and separate MCPMark CDN fixtures are
 absent. No redistribution rights to those excluded CDN inputs are asserted.
 
-The proposed GitHub repository is `CamusFSY/workflow-data-investigator`;
-publication remains pending. These notices describe the included scope and do
-not independently establish authorship or authorize publication. The maintainer
-must confirm the right to license the included original contributions before a
-public release.
+The public source repository is
+[CamusFSY/workflow-data-investigator](https://github.com/CamusFSY/workflow-data-investigator).
+These notices describe the included scope and do not independently establish
+authorship. The maintainer remains responsible for the right to license the
+included original contributions and any future additions.

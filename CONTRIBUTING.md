@@ -2,9 +2,10 @@
 
 Start with a reproducible bug, a small synthetic fixture or a documentation fix.
 The maintained entry point is `data-investigation-agent/`.
-Publication is pending for the proposed repository
-`CamusFSY/workflow-data-investigator`; this document does not imply that its
-issues, pull requests or hosted checks are already available.
+The public repository is
+[CamusFSY/workflow-data-investigator](https://github.com/CamusFSY/workflow-data-investigator).
+See [publication evidence](docs/public-release.md) for the initial source commit
+and verified hosted checks.
 
 ## Local checks
 
@@ -30,9 +31,11 @@ The packaging smoke uses an unrelated temporary working directory, the installed
 entry point and all three demo fixtures. It checks actual output statuses and
 offline replay, including the deliberate SQL error. It never calls a model.
 
-The checked-in CI workflow is configured to run the investigator tests, package
-build and installed-wheel smoke on pull requests. Until it has actually run on
-GitHub, its presence is configuration, not a passing CI result.
+The CI workflow runs the investigator tests, package build and installed-wheel
+smoke on pushes and pull requests. The
+[initial hosted run](https://github.com/CamusFSY/workflow-data-investigator/actions/runs/38140217002)
+passed on Python 3.11 and 3.12. Check the run's commit SHA when evaluating a later
+change; the initial result applies to the initial published source.
 
 ## Change scope
 

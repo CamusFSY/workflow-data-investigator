@@ -8,9 +8,9 @@ exports an HTML report, notebook and standalone offline replay.
 
 中文：用合成数据演示“指标下降是否真的代表业务恶化”，保留每步查询、错误和证据，交付能复跑的结果。
 
-**Publication pending.** Proposed repository:
-`CamusFSY/workflow-data-investigator`. This local candidate has not been published
-to GitHub or a package index. Commands below use the supplied source directory.
+**Public source:** [CamusFSY/workflow-data-investigator](https://github.com/CamusFSY/workflow-data-investigator).
+The source was published on 2026-10-11; no package-index release has been made.
+Commands below use a source checkout.
 
 **Status: early-stage development.** The included demo driver is explicitly
 **SCRIPTED MOCK**. It exercises real tools, but is not a model-autonomy benchmark.
@@ -96,8 +96,11 @@ python3 -B -m unittest discover -s tests -v
 Tests cover real SQLite operations, read-only/resource limits, malformed batches,
 error feedback, clarification state, notebook replay and artifact tampering.
 [Contribution instructions](CONTRIBUTING.md) include a clean installed-wheel smoke.
-[CI configuration](.github/workflows/ci.yml)
-runs offline checks; it is not evidence of a successful hosted CI run until run.
+[Hosted CI for the initial public commit](https://github.com/CamusFSY/workflow-data-investigator/actions/runs/38140217002)
+passed on Python 3.11 and 3.12: 77 tests per version, wheel/source builds and
+installed-wheel checks with all three offline replays. See the
+[workflow](.github/workflows/ci.yml) and [publication evidence](docs/public-release.md)
+for the checked commit and scope.
 
 The SQL tools are bounded; the trusted Python host is **not** an arbitrary-code
 sandbox. Inputs and returned rows are copied into evidence bundles. Use synthetic
@@ -114,9 +117,9 @@ benchmark advantage.
 - [Tool API and troubleshooting](data-investigation-agent/README.md)
 - [Evaluation scope and replay](docs/evaluation.md)
 - [Roadmap](docs/roadmap.md) · [Changelog](CHANGELOG.md)
-- [Candidate scope and publication status](docs/public-release.md)
+- [Public source scope and verification](docs/public-release.md)
 
 Code is licensed under [Apache-2.0](LICENSE). See
 [third-party notices](THIRD_PARTY_NOTICES.md) for component provenance and input
-scope. No program approval, deployment or public release is implied by this
-local candidate.
+scope. Source publication does not imply program approval, deployment or a
+package-index release.
