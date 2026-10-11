@@ -6,14 +6,13 @@ support or security-response SLA is currently claimed.
 
 ## Report privately
 
-If the repository's **Security → Report a vulnerability** option is enabled,
-use it to send a minimal synthetic reproduction to the maintainer. Its current
-availability must be checked; this document does not assert that it is enabled.
-
-If that option is absent, open an issue titled **Private security contact
-requested**, containing no exploit details, credentials, personal data or raw
-trace. Wait for a private reporting channel before sharing sensitive details.
-No separate security mailbox is currently documented.
+A private vulnerability intake or security mailbox has not been verified for
+this project. To request a private channel, open a minimal
+[issue in this repository](https://github.com/CamusFSY/workflow-data-investigator/issues/new)
+titled **Private security contact requested**, containing no exploit details,
+credentials, personal data or raw trace. Wait for the maintainer to confirm a
+private reporting channel before sharing a synthetic reproduction or sensitive
+details. This policy does not claim that GitHub private reporting is enabled.
 
 ## Trust boundary
 
@@ -26,6 +25,13 @@ The host Python process, supplied provider transport and trusted clarification
 callback are trusted. A malicious host or callback is outside the boundary.
 The callback/transport owns external timeouts, credentials, authorization and
 cost accounting. The offline CLI does not configure those services.
+
+The neutral provider adapter requires explicit `allow_data_sharing=True` before
+using a supplied transport. Context documents, schema, SQL text, returned rows
+and prior conversation may then reach the caller's configured endpoint. This is
+not an anonymization layer. A callback/client may retry or bill after a timeout;
+attempt limits and returned token usage do not establish a monetary ceiling.
+Transport dispatch receipts are caller-reported, not independently audited.
 
 Generated bundles include copied inputs, SQL, returned rows and public tool
 notes. Review them before sharing. Input hashing detects accidental changes; it

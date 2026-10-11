@@ -1,9 +1,9 @@
 # Neutral rate output compatibility note
 
-This is a narrow offline correction to generic arithmetic and presentation. It is
-not a typed metric implementation or a claim that qualified model answers are now
-correct. It does not require a model request, private answer, credential or budget
-ledger. Historical model runs and private research are outside this distribution.
+Generic analytics report selected counts and their arithmetic complement without
+assigning a business meaning. This guide explains the output fields, how to
+update consumers, and how to replay older evidence. All examples and regression
+fixtures are included locally; no model request is needed.
 
 The included synthetic
 [rate-meaning fixture](../tests/fixtures/rate_meaning/rate_samples.csv) contains
@@ -55,8 +55,8 @@ two ratios happen to match. Existing outer event/tool-call IDs are unchanged.
 There is no validated metric type in the current runtime. All generic outputs
 therefore remain untyped, including when an input column is named `on_time` or a
 catalog description says approved. No optional model-provided label or
-`metric_contract` field can promote the output. Typed-measurement research remains
-on separate candidate branches; this product branch does not enable that API.
+`metric_contract` field can promote the output. A typed metric-validation API is
+not implemented; consumers must check the supplied definition and query evidence.
 
 ## Callers, rendering and old bundles
 
@@ -68,11 +68,12 @@ provenance; they do not grant type validation.
 
 Tool names, argument schemas, provider/transport signatures, finish states,
 clarification rules, SQL limits and budgets are unchanged. Analyze/plot **tool
-descriptions** now explain neutral arithmetic; consequently the full tools JSON,
-initial payload and source hashes change. The parent's exact product/tool/payload
-pins need review before any separately authorized live run. The lone finish
-schema is unchanged. This patch neither updates those pins nor creates a run or
-spending authorization.
+descriptions** explain neutral arithmetic; consequently their JSON and source
+hashes differ from older versions. If an integration verifies tool-schema or
+runtime hashes, regenerate its expected values from the version being installed
+and review the changes before authorizing a model request. The finish schema is
+unchanged by this rate-field correction. See the [provider contract](provider-integration.md)
+for the current integration and data-sharing requirements.
 
 Report charts and notebook outputs use the actual neutral tool results. Export
 templates identify provider-written prose separately and state that metric

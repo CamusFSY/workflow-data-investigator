@@ -1,7 +1,7 @@
-"""Integration entry point for the separately authorized, original accounting environment.
+"""Legacy callback signature for applications with existing caller-owned accounting.
 
-Import and call this only after the parent task approves live validation. This file
-does not construct a client, fetch credentials, set a budget, or dispatch on import.
+New integrations should use ChatCompletionsProvider; no private/original project
+environment is required. This compatibility example dispatches nothing on import.
 """
 from investigator.loop import run
 from investigator.providers import DeepSeekProvider
@@ -12,10 +12,10 @@ def investigate_with_existing_parent_transport(
 ):
     """transport(request, timeout_seconds=..., budget_reference=...) -> response dict.
 
-    The parent must reserve/check its EXISTING total budget before dispatch, charge
+    The caller must reserve/check its existing total budget before dispatch, charge
     every real request (including failed requests), own credentials, enforce network
     timeouts, and decide whether any retry is affordable. This adapter never retries.
-    Use a non-thinking Chat Completions model configured by the parent.
+    Use a tool-capable Chat Completions model configured by the caller.
     """
     provider = DeepSeekProvider(
         authorized_transport,

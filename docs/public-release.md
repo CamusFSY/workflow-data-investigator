@@ -1,53 +1,47 @@
-# Public source scope and verification
+# Source publication and release checks
 
-**Public source repository:**
-[CamusFSY/workflow-data-investigator](https://github.com/CamusFSY/workflow-data-investigator).
-The authorized initial source publication on 2026-10-11 is commit
+This repository contains the complete toolkit source, original synthetic fixtures,
+tests, provider examples, documentation and Apache-2.0 license. Installation and
+offline reproduction require no other repository. Start with the
+[quickstart](../README.md#quickstart) or [documentation index](README.md).
+
+## Initial source publication
+
+The source was first published on 2026-10-11 in commit
 [`152dc5f3eb6911a99dde391075a1a26963b15d30`](https://github.com/CamusFSY/workflow-data-investigator/commit/152dc5f3eb6911a99dde391075a1a26963b15d30).
-No GitHub Release, package-index upload, deployment or program application was
-part of this publication.
+This was a source publication, not a versioned GitHub Release or package-index upload.
+The repository began with its own Git history. Its initial 83 source paths were
+read back and reconciled with the exported snapshot.
 
-The initial publication is a bounded product snapshot: investigator source, original
-synthetic development fixtures, their tests, user/provider documentation,
-licenses, contributor/security guidance, an installed-wheel smoke script and
-offline CI configuration. Its 83 reviewed source paths were reconciled against
-the frozen export: every remote blob was read back and its SHA-256 checked.
 The initial source-set SHA-256 is
 `8c977ded1d2f6bf0cb36b1c02f87dde7c37ce64a4754afd7f225890b85908975`.
 It hashes UTF-8 lines of `SHA256 + two spaces + path + LF`, sorted by path.
-The frozen source ZIP SHA-256 is
+The initial source ZIP SHA-256 is
 `b82b32c41c744a1fd2baf39860feaec5069ab6c7eafd1f9ae150902f0ad9e92d`.
-These digests identify the initial snapshot; later documentation edits are
-separate commits. Packaging adds only declared build metadata to the wheel and
-source distribution.
+These are historical identifiers for that initial snapshot, not checksums for
+later source trees or current build archives.
 
-The original private repository, its branches/history and sealed evidence stay
-separate and unchanged. This repository started with its own root commit;
-no old repository history was imported. The exported files exclude old research
-or experiment trees, evaluator answers, authorization/budget records, previous
-model traces, uploaded media, external datasets and legacy product code.
+The initial commit's [hosted check](https://github.com/CamusFSY/workflow-data-investigator/actions/runs/38140217002)
+passed 77 tests on Python 3.11 and 3.12, built wheel/sdist artifacts and exercised
+the installed package. Its three synthetic examples replayed 14, 12 and 3 actions,
+including recorded SQL errors, with zero model calls. For any later change,
+inspect its exact commit and conclusion in the [workflow runs](https://github.com/CamusFSY/workflow-data-investigator/actions/workflows/ci.yml).
+The README badge tracks `main`, not an unmerged branch or a live model evaluation.
 
-Future scope changes still require maintainer authorization and review of
-contribution rights. Security reporting options and their availability are
-described in [SECURITY.md](../SECURITY.md). Recheck source and distribution file
-lists and hashes when preparing a release; use the offline commands in
-[CONTRIBUTING.md](../CONTRIBUTING.md). Keep future results in new evidence directories.
+## Preparing a release
 
-The [component notices](../THIRD_PARTY_NOTICES.md) cover this repository's scope;
-they do not grant rights to excluded MCPMark CDN data or unrelated old media.
-Pattern scans and successful replay do not prove the absence of all sensitive
-data, the truth of a conclusion or ownership of every contribution.
+1. Choose the exact source commit and run the tests, build and installed-wheel
+   checks in [CONTRIBUTING.md](../CONTRIBUTING.md).
+2. Inspect the source and distribution file lists. Include only intended code,
+   original synthetic inputs, documentation, license and packaging metadata.
+   Exclude credentials, authorization records, external datasets and raw model traces.
+3. Review contribution rights and retain the notices for shipped materials.
+   [Component notices](../THIRD_PARTY_NOTICES.md) and [SECURITY.md](../SECURITY.md)
+   describe the current license and data-handling boundaries.
+4. Record artifact hashes and observed results for that exact commit. Keep new
+   evidence in a new directory and preserve existing bundles' frozen replay code.
+5. Publish versioned release notes only when a release actually exists, distinguishing
+   offline checks from any separately authorized live evaluation.
 
-The initial commit's
-[GitHub Actions run 38140217002](https://github.com/CamusFSY/workflow-data-investigator/actions/runs/38140217002)
-completed successfully on 2026-10-11. Both Python 3.11 and 3.12 jobs passed
-77 tests, built the wheel and source distribution, and exercised the installed
-wheel away from the checkout. All three synthetic fixtures replayed 14, 12 and
-3 recorded tool results respectively, including recorded SQL errors, with zero
-model API calls. For later commits, inspect the exact head SHA and conclusion in
-[workflow runs](https://github.com/CamusFSY/workflow-data-investigator/actions/workflows/ci.yml).
-
-The demonstration provider remains **SCRIPTED MOCK**. Hosted offline CI does
-not establish live model autonomy, whole-answer accuracy, external adoption or
-independent human review. Any application or adoption claim must reflect actual
-public project facts.
+Successful tests, hash checks and source publication establish neither metric
+truth, ownership of every future contribution, model autonomy nor external adoption.

@@ -1,15 +1,27 @@
 # Contributing
 
 Start with a reproducible bug, a small synthetic fixture or a documentation fix.
-The maintained entry point is `data-investigation-agent/`.
-The public repository is
-[CamusFSY/workflow-data-investigator](https://github.com/CamusFSY/workflow-data-investigator).
-See [publication evidence](docs/public-release.md) for the initial source commit
-and verified hosted checks.
+The Python package is in `data-investigation-agent/`; the
+[documentation index](docs/README.md) maps the CLI, bundle and provider guides.
+
+## Report a bug or propose a change
+
+Use this repository's [issue forms](https://github.com/CamusFSY/workflow-data-investigator/issues/new/choose)
+for a reproducible bug or concrete use case. Include the source commit, Python
+version, OS, exact command, expected and actual behavior, and a small synthetic
+input. State whether the provider was scripted, recorded or model-driven.
+Redact credentials and sensitive data. For vulnerabilities, follow
+[SECURITY.md](SECURITY.md) instead of posting exploit details publicly.
+
+Open changes through this repository's [pull requests](https://github.com/CamusFSY/workflow-data-investigator/pulls).
+Explain one concrete problem and the resulting behavior. Include the commands
+actually run and any checks not run. Add a focused regression when changing
+runtime, protocol, filesystem or replay behavior; documentation fixes should
+check links, examples and affected packaging.
 
 ## Local checks
 
-The investigator's runtime and tests use Python's standard library on Linux:
+Runtime and offline tests use Python's standard library on Linux:
 
 ```sh
 cd data-investigation-agent
@@ -27,36 +39,32 @@ python3 -m venv .venv-wheel
 python3 scripts/smoke_distribution.py --python .venv-wheel/bin/python
 ```
 
-The packaging smoke uses an unrelated temporary working directory, the installed
-entry point and all three demo fixtures. It checks actual output statuses and
-offline replay, including the deliberate SQL error. It never calls a model.
+Build dependencies may be downloaded by these installation commands. The tests
+and packaging smoke make no model calls. The smoke imports the installed package
+from a temporary directory, replays all three delivery cases and the custom
+simulation example, and executes the public callback/client examples with offline
+doubles. It checks actual status, error feedback and replay results.
 
-The CI workflow runs the investigator tests, package build and installed-wheel
-smoke on pushes and pull requests. The
-[initial hosted run](https://github.com/CamusFSY/workflow-data-investigator/actions/runs/38140217002)
-passed on Python 3.11 and 3.12. Check the run's commit SHA when evaluating a later
-change; the initial result applies to the initial published source.
+The [CI workflow](.github/workflows/ci.yml) runs tests, builds and installed-wheel
+checks on Python 3.11 and 3.12. Inspect the exact commit in
+[hosted runs](https://github.com/CamusFSY/workflow-data-investigator/actions/workflows/ci.yml)
+when reviewing a change; a previous successful run does not certify a later one.
 
-## Change scope
+## Contribution boundaries
 
-- Explain one concrete problem and its before/after behavior. Add a focused test
-  when changing runtime, protocol, filesystem or replay behavior.
-- Keep generic analysis labels neutral. A numerator is not automatically an
-  on-time delivery count; numerical consistency does not prove a business claim.
-- Keep providers separate from tools. Do not add a hidden API call, automatic
-  credential discovery, paid retry or budget reset to an offline command.
-- Preserve previous evidence bundles. New evidence belongs in a new directory
-  with its own provenance, not over an old result. Historical research and raw
-  model runs are outside this product distribution.
-- Use synthetic data for reproductions. Include fixture origin and licensing.
-  Do not inspect or copy private evaluator answers into model-visible inputs.
-- AI-assisted patches are welcome; describe what was actually checked. Do not
-  describe AI review as independent human review.
+- Keep generic analysis labels neutral. Arithmetic does not prove metric meaning,
+  business approval or the truth of a provider's explanation.
+- Keep providers separate from tools. Offline commands must not discover credentials,
+  call a paid model, retry a network request or create a spending ledger.
+- Preserve previous evidence bundles. New checks use new output directories with
+  their own input and runtime provenance.
+- Use original synthetic reproductions and document their origin and licensing.
+  Never copy private evaluator answers into model-visible inputs.
+- Describe AI assistance and what was actually verified. AI review is not
+  independent human review. Do not manufacture reports of use or adoption.
 
-## Maintainer workflow
-
-Triage real user reports, reproduce them, review the diff and test outcome, and
-record user-facing behavior changes in `CHANGELOG.md`. A release should be built
-and smoke-tested from its exact source commit. Do not manufacture issues, stars,
-downloads or releases as evidence of adoption. Public-release scope and access
-remain separate maintainer decisions; see [release guidance](docs/public-release.md).
+Maintainers reproduce issues, review changes and update [CHANGELOG.md](CHANGELOG.md)
+with user-facing behavior. Build a release from its exact reviewed source commit
+using the [release checks](docs/public-release.md#preparing-a-release). Contributions
+must be compatible with the project's [Apache-2.0 license](LICENSE); retain
+applicable attribution and third-party notices.

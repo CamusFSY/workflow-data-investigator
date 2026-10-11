@@ -8,11 +8,13 @@ These are proposed maintenance tasks, not implemented features or adoption claim
    metric definitions; keep tooling and business-authority questions separate.
 3. Improve documentation and tested portability before widening the supported
    platform list. Linux is the current CI target.
-4. Evaluate a reusable provider adapter only with explicit transport/budget
-   ownership and recorded model-driven evidence. The offline CLI stays usable
-   without a key.
-5. After a scoped public-release review, maintain real issues, review incoming
+4. Validate the documented callback and configured-client integration with an
+   explicitly authorized model run. Preserve its actual errors and outcomes;
+   offline adapter tests alone do not establish model-driven performance.
+5. Maintain real issues, review incoming
    contributions and publish versioned release notes when a release is warranted.
 
-The existing typed-measurement candidates and manuscripts remain separate
-research history. They are not silently enabled by the installation quickstart.
+The current API provides untyped descriptive arithmetic. Typed metric validation,
+production data ingestion and broader platform support are not implemented.
+Propose a concrete synthetic use case through the [contribution guide](../CONTRIBUTING.md)
+before expanding these boundaries.
