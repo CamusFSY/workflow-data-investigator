@@ -4,17 +4,19 @@ Read-only CSV/SQLite tools, an observable provider loop, and replayable evidence
 The included demonstrations use **synthetic data and an explicitly scripted
 provider**. Runtime dependencies: Python 3.11+ standard library on Linux.
 
-**Public source:** [CamusFSY/workflow-data-investigator](https://github.com/CamusFSY/workflow-data-investigator).
-The source was published on 2026-10-11; no package-index release has been made.
-See [publication evidence](../docs/public-release.md) for the initial commit and
-its successful hosted offline checks.
+**License:** [Apache-2.0](LICENSE). **Status:** alpha; no package-index release.
+This package guide includes the CLI, Python interface and troubleshooting.
+The [bundle format](docs/fixtures.md) and [provider guide](docs/provider-integration.md)
+are included in the source distribution, together with fixtures and examples.
 
 ## Quickstart
 
 From this directory, without installing anything:
 
 ```sh
-python3 -m investigator run --fixture fixtures/join_multiplier --out runs/my-join --inject-schema-error
+python3 -m investigator run \
+  --fixture fixtures/join_multiplier \
+  --out runs/my-join --inject-schema-error
 python3 runs/my-join/replay.py
 ```
 
@@ -41,6 +43,8 @@ source distribution for `fixtures/`, or provide your own synthetic bundle.
 | `run --fixture DIR --out NEW_DIR` | Scripted demonstration using the included delivery vocabulary |
 | `run ... --inject-schema-error` | Include a deliberate bad column, visible feedback and scripted correction |
 | `inspect --fixture DIR --out NEW_DIR` | Import and inspect a declared synthetic bundle, without any provider |
+| `validate --bundle DIR` | Check CSV files, schema, types and limits locally; JSON result, no provider |
+| `investigate --bundle DIR --responses FILE --out NEW_DIR` | Execute explicit offline response bodies through real tools; no new model decisions |
 | `replay DIR` | Verify a recorded run using the installed runtime |
 | `python3 DIR/replay.py` | Use that run's bundled runtime; preferred for historical outputs |
 | `run ... --mode live` | Stop with `LIVE_TRANSPORT_REQUIRED`; no credentials or model calls |
@@ -72,6 +76,15 @@ See the [provider contract](docs/provider-integration.md) for the exact call
 signature; `run` uses positional names documented there. A provider chooses
 registered tools and sees their actual feedback. The tools expose no shell,
 network, arbitrary file-path reader or model-written Python executor.
+
+Providers must expose `mode`, a printable `label`, and callable
+`next(messages, tools, timeout_seconds)`. These are checked before input/output
+side effects. `ChatCompletionsProvider` accepts your authorized callback and
+requires explicit `allow_data_sharing=True`;
+the caller still owns client configuration, retries, timeouts and costs.
+The [public offline example](examples/recorded_investigation.py) and
+[configured-client example](examples/configured_client.py) show both paths.
+They are tested offline; no end-to-end live provider run is claimed.
 
 | Tool | Use |
 |---|---|
@@ -107,8 +120,12 @@ use its own `replay.py` instead.
 A custom schema works with `inspect` and the tool API, but the demo's
 `ScriptedMock` is intentionally tied to the delivery examples. `--mode live` is
 not a hidden setup wizard: a trusted caller must supply a transport and its
-existing authorization/cost controls through the Python API. No paid smoke run
+authorization/cost controls through the Python API. No paid smoke run
 is part of the installation or test suite.
 
-Apache-2.0; original development fixture data are synthetic. The package is an
-early-stage toolkit, with no established adoption or whole-answer accuracy claim.
+Original development fixtures are synthetic and covered by [Apache-2.0](LICENSE).
+For contributions and security reports, use this project's public
+[contribution guide](https://github.com/CamusFSY/workflow-data-investigator/blob/main/CONTRIBUTING.md)
+and [security policy](https://github.com/CamusFSY/workflow-data-investigator/blob/main/SECURITY.md).
+The package is an early-stage toolkit, with no established adoption or
+whole-answer accuracy claim.

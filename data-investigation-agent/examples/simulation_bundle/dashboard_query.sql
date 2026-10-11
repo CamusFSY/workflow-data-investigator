@@ -1,0 +1,1 @@
+SELECT period_key, SUM(CASE WHEN outcome = 'passed' THEN 1 ELSE 0 END) AS passed_runs, COUNT(*) AS eligible_runs FROM simulation_runs WHERE outcome IN ('passed', 'failed') GROUP BY period_key ORDER BY period_key;

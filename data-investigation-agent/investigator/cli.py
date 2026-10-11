@@ -28,9 +28,29 @@ def main(argv=None):
     replay = sub.add_parser("replay", help="Verify recorded tool results offline, including errors")
     replay.add_argument("directory")
     inspect = sub.add_parser("inspect", help="Load/inspect a public bundle without a provider")
-    inspect.add_argument("--fixture", required=True)
+    inspect.add_argument("--fixture", "--bundle", dest="fixture", required=True)
     inspect.add_argument("--out", required=True)
+    check = sub.add_parser("validate", help="Validate your synthetic CSV bundle locally; no provider")
+    check.add_argument("--bundle", required=True)
+    recorded = sub.add_parser("investigate", help="Run supplied offline response bodies through real tools; not a live model")
+    recorded.add_argument("--bundle", dest="fixture", required=True)
+    recorded.add_argument("--responses", required=True, help="Bounded local recording JSON; fixed actions, no network")
+    recorded.add_argument("--out", required=True, help="New output directory, never overwritten")
+    recorded.add_argument("--goal", help="Defaults to the bundle request.txt")
+    recorded.add_argument("--max-steps", type=int, default=24)
+    recorded.add_argument("--max-tool-actions", type=int)
+    recorded.add_argument("--max-seconds", type=int, default=60)
     args = parser.parse_args(argv)
+    if args.command == "validate":
+        from .bundle import validate_bundle
+        try:
+            print(json.dumps(validate_bundle(args.bundle), ensure_ascii=False, indent=2))
+            return 0
+        except Exception as exc:
+            print(json.dumps({"status": "invalid", "provider_calls": 0,
+                              "error": {"type": type(exc).__name__, "message": str(exc)}},
+                             ensure_ascii=False, indent=2))
+            return 2
     if args.command == "replay":
         from .replay import verify
         try:
@@ -57,16 +77,12 @@ def main(argv=None):
         except Exception as exc:
             print(f"SETUP ERROR: {type(exc).__name__}: {exc}", file=sys.stderr)
             return 2
-    if args.mode == "live":
+    if args.command == "run" and args.mode == "live":
         print("LIVE_TRANSPORT_REQUIRED: This CLI has no model transport. Integrate a provider via "
-              "the Python API and supply your authorized transport and existing budget reference. "
+              "ChatCompletionsProvider and explicitly authorize data sharing in your caller. "
               "The CLI does not read credentials or make API calls. See docs/provider-integration.md.",
               file=sys.stderr)
         return 2
-    from .mock import ScriptedMock
-    print("=== SCRIPTED MOCK · SYNTHETIC DATA · 0 API CALLS ===", flush=True)
-    print("仅验证工具/反馈/交付闭环；不是模型自主成功证明。", flush=True)
-    print("目标：" + args.goal, flush=True)
 
     def show(event):
         result = event["result"]
@@ -78,8 +94,25 @@ def main(argv=None):
             print(json.dumps(result["data"], ensure_ascii=False)[:1000], flush=True)
 
     try:
+        if args.command == "investigate":
+            from .bundle import safe_read
+            from .recording import RecordedProvider
+            provider = RecordedProvider(args.responses)
+            if args.goal is None:
+                source = Path(args.fixture).absolute()
+                if any(p.is_symlink() for p in [source, *source.parents]):
+                    raise ValueError("Symlink bundle paths are not accepted")
+                args.goal = safe_read(source, "request.txt", 65536).decode("utf-8").strip()
+            print("=== OFFLINE RECORDED RESPONSES · SYNTHETIC DATA · 0 API CALLS ===", flush=True)
+            print("Fixed supplied responses exercise real tools; no new model decisions.", flush=True)
+        else:
+            from .mock import ScriptedMock
+            provider = ScriptedMock(args.inject_schema_error)
+            print("=== SCRIPTED MOCK · SYNTHETIC DATA · 0 API CALLS ===", flush=True)
+            print("仅验证工具/反馈/交付闭环；不是模型自主成功证明。", flush=True)
+        print("目标：" + args.goal, flush=True)
         outcome = run(args.goal, args.fixture, args.out,
-                      ScriptedMock(args.inject_schema_error), args.max_steps, args.max_seconds, show,
+                      provider, args.max_steps, args.max_seconds, show,
                       max_tool_actions=args.max_tool_actions)
     except Exception as exc:
         print(f"SETUP ERROR: {type(exc).__name__}: {exc}", file=sys.stderr)

@@ -1,5 +1,6 @@
 """Bounded structural evidence and fixed public reasons; no raw response text or headers."""
 import json
+import re
 
 MAX_CALLS_PER_TURN = 4
 KNOWN_TOOLS = {"read_context", "inspect_schema", "query", "analyze", "plot", "finish"}
@@ -25,6 +26,54 @@ REASONS = {
     "upstream_validation_rejected": ("upstream", "Parent transport rejected the decoded response"),
 }
 MISSING = object()
+MODEL_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9_./:-]{0,127}\Z")
+TOKEN_FIELDS = {"prompt_tokens", "completion_tokens", "total_tokens",
+                "prompt_cache_hit_tokens", "prompt_cache_miss_tokens"}
+
+
+def response_metadata(response):
+    """Small allowlist of returned identity/counts; not a billing or authenticity check."""
+    result = {}
+    if not isinstance(response, dict):
+        return result
+    model = response.get("model")
+    if isinstance(model, str) and MODEL_ID.fullmatch(model):
+        result["response_model"] = model
+    usage = response.get("usage")
+    if isinstance(usage, dict):
+        counts = {k: usage[k] for k in sorted(TOKEN_FIELDS) if k in usage
+                  and type(usage[k]) is int and 0 <= usage[k] <= 1_000_000_000}
+        if counts:
+            result["usage"] = counts
+            result["usage_source"] = "response_fields_unverified"
+    return result
+
+
+def provider_observation(provider):
+    """Filter optional trusted-adapter metadata; never serialize arbitrary provider state."""
+    result = {"response_received": False, "dispatch_status": "unknown"}
+    try:
+        value = getattr(provider, "last_observation", None)
+    except Exception:
+        return result
+    if not isinstance(value, dict):
+        return result
+    if type(value.get("response_received")) is bool:
+        result["response_received"] = value["response_received"]
+    if (isinstance(value.get("dispatch_status"), str)
+            and value["dispatch_status"] in {"reported_dispatched", "reported_not_dispatched"}):
+        result["dispatch_status"] = value["dispatch_status"]
+        result["dispatch_source"] = "caller_reported_not_audited"
+    model = value.get("requested_model")
+    if isinstance(model, str) and MODEL_ID.fullmatch(model):
+        result["requested_model"] = model
+    reason = value.get("rejection_reason")
+    if isinstance(reason, str) and reason in {
+            "budget_rejected", "not_authorized", "transport_failed", "recording_exhausted"}:
+        result["rejection_reason"] = reason
+    result.update(response_metadata({"model": value.get("response_model"),
+                                     "usage": value.get("usage")}))
+    return result
 
 
 def shape(value):

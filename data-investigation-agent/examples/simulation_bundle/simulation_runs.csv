@@ -1,0 +1,15 @@
+run_id,period_key,variant,outcome
+before-1,before,A,passed
+before-2,before,A,passed
+before-3,before,A,passed
+before-4,before,B,passed
+before-5,before,B,passed
+before-6,before,B,failed
+before-cancelled,before,B,cancelled
+after-1,after,A,passed
+after-2,after,A,passed
+after-3,after,A,passed
+after-4,after,B,failed
+after-5,after,B,failed
+after-6,after,B,failed
+after-cancelled,after,B,cancelled

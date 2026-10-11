@@ -1,31 +1,35 @@
 # Workflow Data Investigator
 
-**Trace a metric change back to inspectable SQL, results and assumptions.**
+[![Offline checks on main](https://github.com/CamusFSY/workflow-data-investigator/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/CamusFSY/workflow-data-investigator/actions/workflows/ci.yml?query=branch%3Amain)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![Tested Python: 3.11 and 3.12](https://img.shields.io/badge/tested_Python-3.11%20%7C%203.12-3776AB.svg)](.github/workflows/ci.yml)
+[![Development status: alpha](https://img.shields.io/badge/status-alpha-orange.svg)](data-investigation-agent/pyproject.toml)
 
-The main product is a small Python toolkit for read-only investigation of local,
-synthetic CSV data. It records each tool input, returned value and error, then
-exports an HTML report, notebook and standalone offline replay.
+**Investigate a metric change with inspectable SQL, visible errors and replayable evidence.**
 
-中文：用合成数据演示“指标下降是否真的代表业务恶化”，保留每步查询、错误和证据，交付能复跑的结果。
+A small Python toolkit for exploring local synthetic CSV data. A provider chooses
+bounded tools, observes their results, and returns an HTML report, notebook and
+standalone replay. The runtime uses only Python's standard library.
 
-**Public source:** [CamusFSY/workflow-data-investigator](https://github.com/CamusFSY/workflow-data-investigator).
-The source was published on 2026-10-11; no package-index release has been made.
-Commands below use a source checkout.
+中文：用合成数据调查“指标下降是否真的代表业务恶化”，保留查询、错误、口径和可复跑证据。
 
-**Status: early-stage development.** The included demo driver is explicitly
-**SCRIPTED MOCK**. It exercises real tools, but is not a model-autonomy benchmark.
-A model can select actions through the Python provider interface; the CLI has no
-live transport, API-key loader or automatic paid call. The included evidence and
-checks do not establish general accuracy, model autonomy or external adoption.
+[Quickstart](#quickstart) · [Demo results](#demo-results) · [Documentation](docs/README.md) ·
+[Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
-## Try it locally
+**Alpha.** Included demos are labeled **SCRIPTED MOCK** or **OFFLINE RECORDED
+RESPONSES**. They run real tools with fixed provider behavior; they do not prove
+model autonomy. A caller-supplied model can use the Python interface, but no
+end-to-end live integration or external adoption is claimed. The CI badge shows
+`main`; it does not certify an unmerged branch. No package-index release is available.
 
-Use **Python 3.11+ on Linux**. Runtime and offline tests use only the standard
-library. macOS and Windows are not part of the current CI matrix.
+## Quickstart
 
-From a checkout of this repository:
+Use **Python 3.11+ on Linux**. CI tests Python 3.11 and 3.12; macOS and Windows
+are not currently verified. No model account, API key or notebook server is needed.
 
 ```sh
+git clone https://github.com/CamusFSY/workflow-data-investigator.git
+cd workflow-data-investigator
 python3 -m venv .venv
 .venv/bin/python -m pip install ./data-investigation-agent
 .venv/bin/data-investigator run \
@@ -34,96 +38,111 @@ python3 -m venv .venv
 .venv/bin/python runs/join-demo/replay.py
 ```
 
-Open `runs/join-demo/report.html`. A deliberately invalid column produces a real
-SQL error; the scripted driver observes it, inspects the schema and changes its
-next query. The trace keeps the error and the later results. Every output path
-must be new, so a repeated run should use a different `--out` value.
+Open **`runs/join-demo/report.html`** in your browser. Expand a tool step to see
+its actual input and return. The intentional bad-column query remains visible
+alongside the schema check and corrected query. Each run requires a new `--out`
+path so earlier evidence is preserved.
 
-No installation is needed for the source checkout: from
-`data-investigation-agent/`, run `python3 -m investigator` with the same arguments
-and a fixture path relative to that directory.
+If you already have a checkout, start at the `python3 -m venv` line. An
+[installation-free command](data-investigation-agent/README.md#quickstart) is
+also available. Build tooling may be downloaded during installation; the runtime
+and offline demonstrations make no model API calls.
 
-## Three supported demonstrations
+## Demo results
 
-| Fixture | Question it illustrates | Expected behavior |
-|---|---|---|
-| `join_multiplier` | Did a join change the unit being counted? | Compare joined rows with distinct orders; the apparent decline disappears at order grain. |
-| `delivery_slip` | Does a decline remain after correcting the metric? | Compute the decline and locate the affected group; no causal attribution is proved. |
-| `missing_definition` | Is the time basis and eligible population specified? | Ask concrete questions and return `needs_clarification`. |
+These are **expected results from the included synthetic fixtures**, computed
+with the current offline drivers. They are not model evaluations or production
+measurements. [Reproduce and inspect the outputs](docs/demo-output.md).
+
+| Example | Observed result | Outcome |
+| --- | --- | --- |
+| Join duplication | Joined rows: 90.0% → 69.2%; distinct orders: 90.0% → 90.0% | The apparent decline disappears at order grain; 14 actions with the injected error. |
+| Delivery delay | Distinct orders: 90.0% → 60.0%; North: 90.0% → 30.0% | Decline remains; group localization is descriptive, not causal; 12 actions. |
+| Missing definition | Time basis and cancelled-order policy are unresolved | Concrete questions and `needs_clarification`; 3 actions. |
+| Custom simulation CSV | Passed/eligible runs: 5/6 → 3/6 | 9 recorded actions including SQL error, repair, analysis and chart. |
+
+Every investigation exports:
+
+| File | What to inspect |
+| --- | --- |
+| `report.html` / `report.json` | Cited findings, completion status and unresolved questions |
+| `trace.jsonl` | Tool choices, inputs, actual results and errors in order |
+| `investigation.ipynb` | Fixed code cells for the recorded queries and calculations |
+| `replay.py` / `manifest.json` | Standalone replay with copied-input and runtime hashes |
+| `response_diagnostics.jsonl` | Response structure and protocol rejection reasons |
+
+A successful replay checks the recorded calculations. It does not approve a
+business definition or verify every sentence in the provider's explanation.
+
+## Use your own synthetic CSV
+
+A bundle contains a catalog, metric definition, dashboard SQL, request and declared
+CSV files. Validation checks types, paths and resource limits locally. Follow the
+[complete bundle guide](data-investigation-agent/docs/fixtures.md) to replace the
+example's schema and define the entity, denominator, time basis and exclusions.
+
+From the repository root, with the virtual environment above:
 
 ```sh
-.venv/bin/data-investigator run \
-  --fixture data-investigation-agent/fixtures/delivery_slip \
-  --out runs/delay-demo
-.venv/bin/data-investigator run \
-  --fixture data-investigation-agent/fixtures/missing_definition \
-  --out runs/clarification-demo
+example_dir=data-investigation-agent/examples
+.venv/bin/data-investigator validate \
+  --bundle "$example_dir/simulation_bundle"
+.venv/bin/data-investigator investigate \
+  --bundle "$example_dir/simulation_bundle" \
+  --responses "$example_dir/simulation_responses.json" \
+  --out runs/simulation-example
+.venv/bin/python runs/simulation-example/replay.py
 ```
 
-These fixtures are original synthetic examples. The scripted driver knows their
-vocabulary; it is not a general analyst for arbitrary uploaded data. To reuse the
-tools with a different synthetic schema, start with [bundle inspection](data-investigation-agent/docs/fixtures.md)
-and supply a provider using the [integration contract](data-investigation-agent/docs/provider-integration.md).
+This example uses hand-authored response bodies and actual SQL/analysis. Changing
+CSV counts changes the arithmetic; the fixed responses cannot diagnose an arbitrary
+question. For model-selected actions, use the [callback or configured-client
+integration](data-investigation-agent/docs/provider-integration.md). It requires
+explicit data-sharing consent; the caller owns credentials, retries and costs.
+The CLI does not discover keys or start a paid request.
 
-## What you can inspect
-
-| Output | Purpose |
-|---|---|
-| `report.html` / `report.json` | Findings with evidence references, unresolved questions and completion status |
-| `trace.jsonl` | Ordered tool selections, inputs, actual returns and visible errors |
-| `investigation.ipynb` | Fixed code cells replaying the actual recorded analysis |
-| `replay.py` / `manifest.json` | Standalone replay and input/runtime integrity checks |
+## How it works
 
 ```mermaid
 flowchart LR
-  G[Goal + public bundle] --> P[Provider chooses tools]
-  P --> T[Read context / schema / read-only SQL / bounded analysis]
+  G[Goal and synthetic bundle] --> P[Provider chooses tools]
+  P --> T[Context, schema, read-only SQL, fixed analysis]
   T --> R[Actual result or error]
   R --> P
   P --> F[Finish with evidence references]
-  F --> A[Report + notebook + offline replay]
+  F --> A[Report, notebook and offline replay]
 ```
 
-The demo uses `ScriptedMock` at the provider step. With a model provider, choices
-come from the returned tool calls. The runtime does not select a diagnosis by
-fixture name. Neither evidence references nor passing replay guarantee that free
-text is correct; metric meaning, numerical validity and explanatory support are
-separate questions. Generic rates retain neutral labels and source columns.
+The runtime validates tool calls, executes them within bounds and returns evidence
+to the provider. Model providers make their next choice from those returns;
+scripted and recorded providers exercise the same protocol offline. See the
+[architecture and trust boundaries](docs/architecture.md) for component links,
+limits and failure behavior.
 
-## Development and limitations
+Use synthetic inputs only. The host and caller's transport are trusted code,
+not an arbitrary-code sandbox. Generic analysis remains an untyped ratio: it
+cannot establish metric authority, causation or statistical significance.
+[Evaluation scope](docs/evaluation.md) separates what the checks prove from
+what still needs live validation.
+
+## Contribute and verify
 
 ```sh
 cd data-investigation-agent
 python3 -B -m unittest discover -s tests -v
 ```
 
-Tests cover real SQLite operations, read-only/resource limits, malformed batches,
-error feedback, clarification state, notebook replay and artifact tampering.
-[Contribution instructions](CONTRIBUTING.md) include a clean installed-wheel smoke.
-[Hosted CI for the initial public commit](https://github.com/CamusFSY/workflow-data-investigator/actions/runs/38140217002)
-passed on Python 3.11 and 3.12: 77 tests per version, wheel/source builds and
-installed-wheel checks with all three offline replays. See the
-[workflow](.github/workflows/ci.yml) and [publication evidence](docs/public-release.md)
-for the checked commit and scope.
+[CONTRIBUTING.md](CONTRIBUTING.md) covers reproducible bug reports, the installed-wheel
+smoke, tests and pull requests. Read [SECURITY.md](SECURITY.md) before sharing a trace
+or reporting a vulnerability. Small synthetic bug cases and improvements observed
+by real users are useful contributions.
 
-The SQL tools are bounded; the trusted Python host is **not** an arbitrary-code
-sandbox. Inputs and returned rows are copied into evidence bundles. Use synthetic
-data, review bundles before sharing, and read [SECURITY.md](SECURITY.md).
+[Documentation index](docs/README.md) · [Roadmap](docs/roadmap.md) ·
+[Changelog](CHANGELOG.md) · [Source publication record](docs/public-release.md)
 
-## Next contributions
+## License
 
-The current focus is making the small toolkit easy to reproduce and maintain.
-Useful contributions include minimal synthetic bug cases, clearer schema errors,
-packaging portability and documentation tested by an actual new user. There is
-no claim of established external adoption, independent human review or a novel
-benchmark advantage.
-
-- [Tool API and troubleshooting](data-investigation-agent/README.md)
-- [Evaluation scope and replay](docs/evaluation.md)
-- [Roadmap](docs/roadmap.md) · [Changelog](CHANGELOG.md)
-- [Public source scope and verification](docs/public-release.md)
-
-Code is licensed under [Apache-2.0](LICENSE). See
-[third-party notices](THIRD_PARTY_NOTICES.md) for component provenance and input
-scope. Source publication does not imply program approval, deployment or a
-package-index release.
+Source code and original synthetic fixtures are licensed under **[Apache-2.0](LICENSE)**.
+The [package license](data-investigation-agent/LICENSE) and
+[package metadata](data-investigation-agent/pyproject.toml) carry the same license.
+[Component notices](THIRD_PARTY_NOTICES.md) describe the shipped materials and build tools.
