@@ -21,7 +21,7 @@ for the study design, observed costs and remaining limitations.
 
 中文：用合成数据调查“指标下降是否真的代表业务恶化”，保留查询、错误、口径和可复跑证据。
 
-[Quickstart](#quickstart) · [Demo results](#demo-results) · [Live evaluation](data-investigation-agent/docs/live-evaluation.md) · [Research](#research) · [Documentation](docs/README.md) ·
+[Quickstart](#quickstart) · [Captioned demo](docs/showcase-demo.md) · [Showcase source](site/index.html) · [Demo results](#demo-results) · [Live evaluation](data-investigation-agent/docs/live-evaluation.md) · [Research](#research) · [Documentation](docs/README.md) ·
 [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
 **Alpha.** Included demos are labeled **SCRIPTED MOCK** or **OFFLINE RECORDED
@@ -116,7 +116,7 @@ integration](data-investigation-agent/docs/provider-integration.md). It requires
 explicit data-sharing consent; the caller owns credentials, retries and costs.
 The CLI does not discover keys or start a paid request.
 
-## How it works
+## Method: from a tool loop to an answer artifact
 
 ```mermaid
 flowchart LR
@@ -128,11 +128,76 @@ flowchart LR
   F --> A[Report, notebook and offline replay]
 ```
 
-The runtime validates tool calls, executes them within bounds and returns evidence
-to the provider. Model providers make their next choice from those returns;
-scripted and recorded providers exercise the same protocol offline. See the
-[architecture and trust boundaries](docs/architecture.md) for component links,
-limits and failure behavior.
+The provider chooses actions from the current messages and tool schemas. The
+runtime validates each batch, executes its tools in order and returns actual
+results or errors with evidence IDs. A later provider turn can use that feedback.
+SQL is read-only; analysis functions are fixed. Scripted and recorded providers
+exercise this same protocol offline, but their choices are not new model decisions.
+
+An optional **caller-frozen answer contract** makes the final artifact explicit:
+
+1. **Freeze before the first request.** The caller supplies expected column names
+   and order, types, nullability and row-count bounds. The runner validates and
+   copies this contract. It contains no expected values or reference SQL, and a
+   model-visible document or later model response cannot replace it.
+2. **Select the answer.** For an `answered` or `conditional` finish,
+   `answer_evidence_id` names one successful,
+   untruncated query from the current run. `supporting_evidence_ids` separately
+   names context, schema checks, queries, analysis or plots. The runtime does not
+   choose the first, last or best-looking query on the provider's behalf.
+   A `needs_clarification` finish can omit an answer if it retains a supporting
+   source and a concrete unresolved question or assumption.
+3. **Validate, then accept or return feedback.** Source, role and shape failures
+   are tool observations. During ordinary turns, the provider may repair a
+   rejected finish using the original remaining budget. Rejection creates no
+   additional budget; a rejected terminal finish-only submission ends the run.
+4. **Export the record.** Reports expose the chosen answer and its supports;
+   traces preserve errors and rejected attempts. Replay restores the frozen
+   contract, checks copied-input hashes and re-executes recorded tool operations.
+
+For a one-row contract with only an integer `publisher_id`, returning the correct
+ID plus `publisher_name` fails the interface. Returning a wrong integer alone
+can pass it. A correct table can also have an incorrect summary. These examples
+separate three questions:
+
+| Check | What it establishes | What it does not establish |
+| --- | --- | --- |
+| Structural validation | The selected source, types and result shape meet the frozen contract | Numerical correctness or support relevance |
+| Independent numerical verification | The selected result matches a task-specific reference | Truth of every narrative claim |
+| Narrative grounding | Each reviewed claim follows from available evidence | Metric authority, causal identification or universal reliability |
+
+The [research draft](docs/research/technical-report/workflow-data-investigator-technical-report.pdf)
+formalizes three elementary interface properties with their assumptions:
+
+- **Conditional structural soundness.** With a fixed contract, stable trusted
+  records and a sound finish gate, acceptance implies that the selected primary
+  is successful, complete and contract-conforming, with usable role references.
+- **Shape cannot certify meaning.** A deterministic validator observing only
+  structural features cannot distinguish structurally equivalent results whose
+  numerical correctness differs. A correct table can still have a false summary.
+- **Bounded continuation.** Finite original request and action caps bound repair
+  attempts. They guarantee neither acceptance nor a correct answer.
+
+![Caller fixes the contract; agent and tools submit to a finish gate; rejection can return to repair within the original budget. Structure, numerical correctness and grounding are checked separately.](docs/research/technical-report/figures/interface-verification.png)
+
+Writing `V(answer, contract)` for the runtime's structural check, `V` does not
+imply numerical correctness or grounded prose. Replay is another distinct check:
+it verifies recorded computations and integrity **relative to the supplied
+manifest**, not the authenticity of a replaced manifest. This is an engineering
+boundary, not a new learning algorithm or formal verification of the software.
+
+The runnable [offline role example](data-investigation-agent/docs/evidence-roles.md#recorded-cli-and-configured-client)
+retains the `reporting_week` SQL error at `e004`, inspects schema at `e005`, and
+selects the corrected `e006` query. It returns two period/count rows and keeps
+`e002`, `e003`, `e007` and `e008` as support. Those actions are hand-authored;
+the SQL, counts and replay are actual execution. Omit the contract to retain
+the legacy multi-reference finish interface.
+
+See the [architecture and trust boundaries](docs/architecture.md),
+[provider contract](data-investigation-agent/docs/provider-integration.md) and
+[answer-role rules](data-investigation-agent/docs/evidence-roles.md) for exact
+interfaces, limits and failure behavior. The [captioned demo and capture instructions](docs/showcase-demo.md)
+walk through a real offline run and its report.
 
 Use synthetic inputs or an explicitly reviewed public snapshot. The host and caller's transport are trusted code,
 not an arbitrary-code sandbox. Generic analysis remains an untyped ratio: it
@@ -146,7 +211,7 @@ The [technical report](docs/research/technical-report/workflow-data-investigator
 
 Explicit mode used 14 requests and CNY 0.102346, compared with 11 requests and CNY 0.079332 for legacy mode. Four exposed regressions passed numerical checks, but one still failed end-to-end because its summary miscounted a group in the correct ranking. The report separates structure, numerical verification, and narrative grounding. It does not establish arithmetic superiority, statistical significance, or an official BIRD score.
 
-Status: technical report draft, with [editable source](docs/research/technical-report/report.tex); no claim of conference acceptance or peer review. An earlier, separate [64-episode clarification pilot](docs/research/research-overview.md) provides historical context and is not pooled with the product evaluation.
+Status: 11-page research draft in NeurIPS 2026 preprint style, with [editable source](docs/research/technical-report/report.tex); not submitted, peer-reviewed or accepted at NeurIPS. An earlier, separate [64-episode clarification pilot](docs/research/research-overview.md) provides historical context and is not pooled with the product evaluation.
 
 ## Contribute and verify
 

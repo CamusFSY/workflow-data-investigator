@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An inspectable data-analysis agent toolkit. Follow tool errors, caller-frozen answer contracts, evidence roles and offline replay.">
+  <meta name="theme-color" content="#123e3b">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Workflow Data Investigator · From question to inspectable evidence</title>
+  <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="masthead wrap">
+  <a class="wordmark" href="#"><img src="assets/mark.svg" alt="" width="32" height="32"><span>Workflow<br><strong>Data Investigator</strong></span></a>
+  <nav aria-label="Main navigation"><a href="#method">Method</a><a href="#demo">Demo</a><a href="#evidence">Results</a><a href="#start">Quickstart</a><a href="https://github.com/CamusFSY/workflow-data-investigator">GitHub <span aria-hidden="true">→</span></a></nav>
+</header>
+<main id="main">
+  <section class="hero wrap" aria-labelledby="hero-title">
+    <div>
+      <p class="eyebrow">Open-source research toolkit <span class="tag">Alpha</span></p>
+      <h1 id="hero-title">A result is only<br>part of the answer.</h1>
+      <p class="lede">Investigate a metric change with inspectable SQL, visible errors and replayable evidence.</p>
+      <p class="intro">Follow the path from a question to its data. Give the answer a caller-defined shape. Keep the supporting evidence—and the failures that led to it.</p>
+      <div class="actions"><a class="button" href="#demo">Watch the real tool run <span aria-hidden="true">→</span></a><a class="text-link" href="paper/report.pdf">Read the research draft <span aria-hidden="true">→</span></a></div>
+      <p class="small hero-note">Python 3.11+ · Standard-library runtime · Apache-2.0</p>
+    </div>
+    <figure class="evidence-window">
+      <figcaption><span class="window-dot" aria-hidden="true"></span> Inside a synthetic investigation <span class="mono">9 actions</span></figcaption>
+      <div class="window-content">
+        <p class="eyebrow">Offline recorded responses · No model calls</p>
+        <div class="trace-line"><span class="trace-id">e004</span><div><span class="status error">QUERY ERROR · RETAINED</span><code>no such column: reporting_week</code></div></div>
+        <div class="trace-line"><span class="trace-id">e005</span><div><span class="status">INSPECT SCHEMA</span><code>run_id · period_key · variant · outcome</code></div></div>
+        <div class="trace-line"><span class="trace-id">e006</span><div><span class="status success">ANSWER QUERY · SHAPE ACCEPTED</span><p>Corrected query uses <code>period_key</code>.</p></div></div>
+        <table class="mini-table"><caption class="sr-only">Actual selected query output from the included synthetic example</caption><thead><tr><th scope="col">period_key</th><th scope="col">passed_runs</th><th scope="col">eligible_runs</th></tr></thead><tbody><tr><th scope="row">after</th><td>3</td><td>6</td></tr><tr><th scope="row">before</th><td>5</td><td>6</td></tr></tbody></table>
+        <div class="evidence-footer"><span>Answer <b>e006</b></span><span>Support <b>e002 · e003 · e007 · e008</b></span></div>
+      </div>
+      <p class="window-footnote">Actual tool results; fixed, hand-authored choices. <a href="examples/simulation/report.html">Inspect the generated report →</a></p>
+    </figure>
+  </section>
+
+  <section class="problem-band" aria-labelledby="problem-title"><div class="wrap problem-grid">
+    <div><p class="eyebrow">The problem</p><h2 id="problem-title">“The metric fell.”<br>What actually changed?</h2></div>
+    <div><p>A query can run successfully and still use the wrong grain, return the wrong shape, or support an inaccurate explanation. An agent’s final sentence hides those distinctions.</p><p>This toolkit makes the investigation inspectable: bounded tools, retained feedback, an explicit answer artifact and a replayable record. It starts with synthetic CSV bundles or explicitly admitted public snapshots.</p></div>
+  </div></section>
+
+  <section id="method" class="section wrap" aria-labelledby="method-title">
+    <div class="section-head"><p class="eyebrow">01 / Method</p><h2 id="method-title">A tool loop with an inspectable finish.</h2><p>The provider proposes actions. The runtime validates and executes them. Actual results and errors become the next turn’s observations.</p></div>
+    <ol class="loop" aria-label="Investigation workflow">
+      <li><span class="step-number">01</span><h3>Freeze the task</h3><p>Goal, bundle, limits and optional caller-owned answer contract.</p></li>
+      <li><span class="step-number">02</span><h3>Choose & execute</h3><p>Context, schema, read-only SQL, fixed analysis and plots.</p></li>
+      <li><span class="step-number">03</span><h3>Observe & repair</h3><p>Return real feedback. Keep rejected attempts within the original budget.</p></li>
+      <li><span class="step-number">04</span><h3>Select & export</h3><p>Name the answer and its supports. Export report, trace, notebook and replay.</p></li>
+    </ol>
+    <p class="loop-note"><span aria-hidden="true">↶</span> Steps 2–3 repeat within fixed limits. A rejected finish in the terminal finish-only phase ends the run.</p>
+    <div class="method-detail">
+      <div><h3>The caller defines the interface.</h3><p>Before the first provider request, the runtime copies a contract for column names and order, value types, nullability and row bounds. The model cannot replace it. The contract contains no expected values or reference SQL.</p><p>For an answered or conditional finish, the provider selects one successful, untruncated query as the answer. Supporting context, queries, analysis and plots remain separate.</p><a class="text-link" href="https://github.com/CamusFSY/workflow-data-investigator/blob/main/data-investigation-agent/docs/evidence-roles.md">Read the full contract →</a></div>
+      <div class="contract-panel"><p class="code-title">Example · frozen before the run</p><pre><code>{
+  "version": 1,
+  "columns": [{
+    "name": "publisher_id",
+    "type": "integer",
+    "nullable": false
+  }],
+  "min_rows": 1,
+  "max_rows": 1
+}</code></pre><p class="small">A correct identifier plus an extra name column fails this shape. A wrong integer can still pass it.</p></div>
+    </div>
+    <div class="verification"><h3>Three questions. Three different checks.</h3><dl><div><dt>Structure</dt><dd>Does the selected result satisfy the frozen contract?</dd></div><div><dt>Numerical correctness</dt><dd>Does the selected value or table match an independent reference?</dd></div><div><dt>Narrative grounding</dt><dd>Does each claim follow from the evidence?</dd></div></dl><p>The runtime checks source, type and shape. Replay checks recorded computations and integrity relative to the supplied manifest. Neither establishes metric authority, causality or the truth of every sentence.</p></div>
+    <details class="paper-detail" id="theory"><summary>What the theory establishes</summary><div class="paper-detail-body">
+      <figure class="paper-figure"><a href="paper/figures/interface-verification.svg"><img src="paper/figures/interface-verification.svg" width="791" height="357" loading="lazy" alt="Caller fixes a contract; agent and tools submit to a finish gate. Rejection permits repair within the original budget. Separate evaluation checks structure, numerical result and grounding."></a><figcaption>Conceptual interface diagram from the research draft. Select the figure to view it at full size.</figcaption></figure>
+      <dl class="theory-list"><div><dt>Conditional structural soundness</dt><dd>With a fixed contract, stable trusted records and a sound gate, an accepted answer-bearing finish has a successful, complete, contract-conforming primary.</dd></div><div><dt>Structure does not certify meaning</dt><dd>A deterministic shape-only validator cannot distinguish structurally equivalent results with different correctness. A correct table can also have a false summary.</dd></div><div><dt>Repair stays bounded</dt><dd>Finite original request and action caps bound continued attempts. They guarantee neither acceptance nor a correct answer.</dd></div></dl>
+      <p>These are elementary conditional interface properties, not new algorithms or formal verification of the software. <a href="paper/report.pdf">Read the assumptions and proofs in the 11-page research draft →</a></p>
+    </div></details>
+  </section>
+
+  <section id="demo" class="section demo-section" aria-labelledby="demo-title"><div class="wrap">
+    <div class="section-head"><p class="eyebrow">02 / See the software</p><h2 id="demo-title">An error, a repair, a record you can replay.</h2><p>A short capture of the current CLI and its generated report. Real SQL and replay; hand-authored provider responses on original synthetic data.</p></div>
+    <div class="disclosure"><strong>OFFLINE RECORDED RESPONSES</strong><span>Fixed actions. No fresh autonomous-model performance. No model API calls.</span></div>
+    <video id="demo-video" controls playsinline preload="none" poster="assets/demo-poster.jpg" aria-label="Offline software demonstration with burned-in English captions">
+      <source src="assets/demo.mp4" type="video/mp4">
+      <track kind="captions" src="assets/demo.vtt" srclang="en" label="English">
+      Your browser does not support HTML video. <a href="assets/demo.mp4">Download the captioned MP4</a>.
+    </video>
+    <div class="video-links"><span>Captioned screen capture · Silent · Approximately 80 seconds</span><a href="assets/demo.mp4" download>Download MP4</a><a href="assets/demo-transcript.txt">Text transcript</a><a href="https://github.com/CamusFSY/workflow-data-investigator/blob/main/docs/showcase-demo.md">Reproduce the capture</a></div>
+    <div class="demo-follow"><div><h3>Inspect what the run kept.</h3><p>The simulation example preserves <code>e004</code>’s SQL error, schema inspection at <code>e005</code> and the corrected answer at <code>e006</code>. The measured pass rate changes from 5/6 to 3/6. This is descriptive arithmetic.</p></div><div class="actions"><a class="button secondary" href="examples/simulation/report.html">Open actual report →</a><a class="text-link" href="assets/simulation-replay.zip" download>Download synthetic replay bundle</a></div></div>
+  </div></section>
+
+  <section class="section wrap" aria-labelledby="examples-title">
+    <div class="section-head"><p class="eyebrow">03 / Concrete cases</p><h2 id="examples-title">Same apparent symptom. Different conclusions.</h2><p>Included synthetic fixtures with fixed offline drivers. These illustrate workflow behavior, not model accuracy.</p></div>
+    <div class="case-grid">
+      <article><p class="eyebrow">Join duplication</p><h3>A decline that disappears at the right grain.</h3><p class="case-number">90.0% → 90.0%</p><p>Distinct-order rate stays flat while joined-row rate falls from 90.0% to 69.2%. Check entity grain before interpreting the dashboard.</p></article>
+      <article><p class="eyebrow">Delivery delay</p><h3>A decline that remains after the check.</h3><p class="case-number">90.0% → 60.0%</p><p>The order-level decline remains. North falls from 90.0% to 30.0%; localization describes where, without establishing why.</p></article>
+      <article><p class="eyebrow">Missing definition</p><h3>A question that needs an authoritative answer.</h3><p class="case-label">needs_clarification</p><p>Time basis and cancelled-order policy are unresolved. The workflow retains concrete questions and an incomplete status.</p></article>
+    </div><p class="small"><a href="https://github.com/CamusFSY/workflow-data-investigator/blob/main/docs/demo-output.md">Fixture arithmetic, source files and reproduction instructions →</a></p>
+  </section>
+
+  <section id="evidence" class="section research-section" aria-labelledby="results-title"><div class="wrap">
+    <div class="section-head"><p class="eyebrow">04 / Observed evidence</p><h2 id="results-title">One structural repair.<br>An explicit cost.</h2><p>Three prospective question families from an adapted BIRD Mini-Dev database. One trial per mode per family, on the same build and one model configuration.</p></div>
+    <div class="results-grid">
+      <figure class="result-chart"><figcaption><h3>Strict end-to-end success</h3><p>Families passing all declared checks, out of 3</p></figcaption><div class="bar-row"><span>Legacy</span><div class="bar-track"><span class="bar legacy two-thirds"></span></div><strong>2/3</strong></div><div class="bar-row"><span>Roles + contract</span><div class="bar-track"><span class="bar roles full"></span></div><strong>3/3</strong></div><div class="axis" aria-hidden="true"><span>0</span><span>1</span><span>2</span><span>3</span></div><p class="chart-note">Both modes answered all three substantive questions correctly. The difference was one answer-shape repair, not an arithmetic gain.</p></figure>
+      <figure class="result-chart"><figcaption><h3>Observed model requests</h3><p>Totals across the same three families per mode</p></figcaption><div class="bar-row"><span>Legacy</span><div class="bar-track"><span class="bar legacy eleven"></span></div><strong>11</strong></div><div class="bar-row"><span>Roles + contract</span><div class="bar-track"><span class="bar roles fourteen"></span></div><strong>14</strong></div><div class="axis" aria-hidden="true"><span>0</span><span>5</span><span>10</span><span>15</span></div><p class="chart-note">Recorded usage estimates: <strong>CNY 0.079332</strong> legacy; <strong>CNY 0.102346</strong> roles + contract. Not invoices or current price quotes.</p></figure>
+    </div>
+    <div class="research-detail"><div><h3>What changed in family 745?</h3><p>The contract required <code>publisher_id</code> alone. Both modes initially returned the correct ID with an extra name column. Explicit mode received <code>answer_columns_mismatch</code> and repaired the shape within the same trial. Legacy’s selected artifact remained structurally ineligible; its answer was unverifiable under that rule, not numerically wrong.</p></div><aside class="failure-note"><p class="eyebrow">A retained failure · Exposed regression panel</p><h3>Correct table. Incorrect sentence.</h3><p>Four exposed regressions passed numerical checks: <strong>4/4</strong>. Strict success was <strong>3/4</strong>. One correct 19-row ranking contained seven singleton colours; the summary said six.</p></aside></div>
+    <p class="research-boundary">The related sign diagnostic (two trials) and exposed smoke (one trial) are separate from the prospective comparison. These small observations establish no statistical superiority or broad model advantage. Review was AI-assisted, not independent human review; raw live traces and reference data are not bundled.</p>
+    <details class="paper-detail" id="paper-results"><summary>Inspect the per-family outcomes and grounding failure</summary><div class="paper-detail-body">
+      <figure class="paper-figure"><a href="paper/figures/prospective-results.svg"><img src="paper/figures/prospective-results.svg" width="791" height="412" loading="lazy" alt="Families 744 and 800 pass strictly in both modes. Family 745 is unverifiable in legacy and passes in explicit mode. Legacy uses 11 requests and CNY 0.079332; explicit uses 14 requests and CNY 0.102346."></a><figcaption>Three prospective families, one trial per mode. One structural difference and its observed resource cost; no population estimate.</figcaption></figure>
+      <figure class="paper-figure"><a href="paper/figures/ranking-grounding-failure.svg"><img src="paper/figures/ranking-grounding-failure.svg" width="791" height="546" loading="lazy" alt="The correct 19-row ranking has seven colours with count one: Yellow/Blue, White/Red, Violet, Silver, Green/Blue, Blue/White and Amber. The report incorrectly claimed six."></a><figcaption>Separate exposed regression: the table is correct, but its summary contradicts it. Select either figure to inspect it at full size.</figcaption></figure>
+      <p>Derived observations from BIRD-SQL Mini-Dev, BIRD Team, under CC BY-SA 4.0. <a href="paper/DATA_NOTICE.md">Data attribution</a> · <a href="paper/data/figure_data.json">Figure data</a> · <a href="https://github.com/CamusFSY/workflow-data-investigator/blob/main/docs/research/technical-report/build_figures.py">Reproduce the figures</a></p>
+    </div></details>
+    <p class="source-line">Source: <a href="https://github.com/CamusFSY/workflow-data-investigator/blob/main/data-investigation-agent/docs/live-evaluation.md">frozen live evaluation</a> · Evaluated runtime <a href="https://github.com/CamusFSY/workflow-data-investigator/commit/a18a07061ea7b9a3e1950b4527e36e266d17b487">a18a070</a> · <a href="paper/report.pdf">11-page research draft</a> · <a href="https://github.com/CamusFSY/workflow-data-investigator/blob/main/docs/research/technical-report/report.tex">Paper source</a> · <a href="paper/FONT_NOTICES.md">Font notices</a></p>
+  </div></section>
+
+  <section class="section wrap" aria-labelledby="audit-title">
+    <div class="audit-grid"><div><p class="eyebrow">05 / Replay & audit</p><h2 id="audit-title">Keep the path<br>to the conclusion.</h2><p>The export preserves the inputs, tool choices, returns, errors and completion state. A standalone replay checks the captured calculations against copied inputs without making model calls.</p><a class="text-link" href="https://github.com/CamusFSY/workflow-data-investigator/blob/main/docs/architecture.md">Architecture & trust boundaries →</a></div><dl class="artifact-list"><div><dt>report.html / report.json</dt><dd>Findings, answer and support roles, status and unresolved questions.</dd></div><div><dt>trace.jsonl / response_diagnostics.jsonl</dt><dd>Actual tool inputs, outputs, errors and protocol rejection reasons.</dd></div><div><dt>investigation.ipynb</dt><dd>Fixed cells for recorded queries and calculations; no invented cell outputs.</dd></div><div><dt>replay.py / manifest.json</dt><dd>Frozen replay runtime and copied-input hashes. Integrity is relative to the supplied manifest.</dd></div></dl></div>
+    <div class="limits"><h3>Where the guarantees stop</h3><p>The host and transport are trusted code, not an arbitrary-code sandbox. Passing a contract does not verify numerical values, support relevance, metric authority or prose. A live provider requires explicit data-sharing consent and caller-owned credentials, timeouts and spending controls. Offline demos cannot adapt their fixed choices to a new question.</p><p>The project is alpha. Linux is the verified platform; CI covers Python 3.11 and 3.12. There is no package-index release, claim of conference acceptance or claim of external adoption.</p></div>
+  </section>
+
+  <section id="start" class="section start-section" aria-labelledby="start-title"><div class="wrap start-grid">
+    <div><p class="eyebrow">06 / Try it locally</p><h2 id="start-title">Start with evidence<br>you can inspect.</h2><p>No model account or API key needed. This quickstart runs the <strong>SCRIPTED MOCK</strong> join example with a deliberate SQL error.</p><p>Open <code>runs/join-demo/report.html</code>, then expand the evidence steps. Use a new output path for every run.</p><p class="small">Python 3.11+ on Linux. Installation may download build tooling; runtime demonstrations make no model calls.</p><div class="start-links"><a href="https://github.com/CamusFSY/workflow-data-investigator/blob/main/data-investigation-agent/docs/provider-integration.md">Connect your authorized provider →</a><a href="https://github.com/CamusFSY/workflow-data-investigator/blob/main/docs/README.md">Browse all documentation →</a></div></div>
+    <div class="quickstart"><div class="code-toolbar"><span>Terminal / from a new directory</span><button id="copy-command" type="button" hidden>Copy commands</button><span id="copy-status" class="sr-only" role="status"></span></div><pre><code id="quickstart-code">git clone https://github.com/CamusFSY/workflow-data-investigator.git
+cd workflow-data-investigator
+python3 -m venv .venv
+.venv/bin/python -m pip install ./data-investigation-agent
+.venv/bin/data-investigator run \
+  --fixture data-investigation-agent/fixtures/join_multiplier \
+  --out runs/join-demo --inject-schema-error
+.venv/bin/python runs/join-demo/replay.py</code></pre></div>
+  </div></section>
+</main>
+<footer class="wrap footer"><div class="footer-brand">Workflow Data Investigator<span>Inspect the answer. Retain the evidence.</span></div><nav aria-label="Footer navigation"><a href="https://github.com/CamusFSY/workflow-data-investigator">Source</a><a href="paper/report.pdf">Research draft</a><a href="https://github.com/CamusFSY/workflow-data-investigator/blob/main/SECURITY.md">Security</a><a href="https://github.com/CamusFSY/workflow-data-investigator/blob/main/LICENSE">Apache-2.0</a></nav></footer>
+</body>
+</html>

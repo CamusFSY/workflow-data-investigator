@@ -1,0 +1,51 @@
+{
+  "title": "Evidence Roles and Answer Contracts",
+  "author": "Yiting Feng",
+  "status": "Research draft \u00b7 12 October 2026",
+  "method": "One primary answer, separate support, and a caller-frozen structural contract. Rejected finishes can be repaired only within the original budget and while runtime phase permits.",
+  "theory": [
+    {
+      "title": "Conditional structural soundness",
+      "text": "Accepted answer-bearing finishes satisfy the recorded structural predicate, assuming a sound gate, fixed contract, and stable trusted evidence."
+    },
+    {
+      "title": "Structure does not certify semantics",
+      "text": "Shape-equivalent results can differ in correctness, and a correct table can have an incorrect summary."
+    },
+    {
+      "title": "Repair stays bounded",
+      "text": "Finite original request and action caps bound attempts; they do not guarantee acceptance or a correct answer."
+    }
+  ],
+  "results": {
+    "prospective_families": 3,
+    "trials_per_mode_per_family": 1,
+    "strict_success": {
+      "explicit": "3/3",
+      "legacy": "2/3"
+    },
+    "correct_substantive_answers": {
+      "explicit": "3/3",
+      "legacy": "3/3"
+    },
+    "requests": {
+      "explicit": 14,
+      "legacy": 11
+    },
+    "cost_cny": {
+      "explicit": 0.102346,
+      "legacy": 0.079332
+    },
+    "explanation": "One repaired shape violation; no observed arithmetic-accuracy improvement.",
+    "regression": "Correct 19-row ranking; summary said six singleton colours, table contains seven.",
+    "query_replay": "29/29 distinct captured results replayed across all 13 declared trials."
+  },
+  "limits": "Three prospective families from one known database, one trial per mode. No statistical superiority or general reliability claim. Diagnostic and exposed panels are separate. Research draft, not submitted or accepted at NeurIPS.",
+  "assets": {
+    "method": "figures/interface-verification.svg",
+    "results": "figures/prospective-results.svg",
+    "regression": "figures/ranking-grounding-failure.svg"
+  },
+  "source_url": "https://github.com/CamusFSY/workflow-data-investigator",
+  "evaluated_commit": "a18a07061ea7b9a3e1950b4527e36e266d17b487"
+}
