@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Preserve independently valid questions and assumptions when an optional-contract
+  finish is rejected for an unrelated structural error. Reject contracts above the
+  SQL worker's 64-column limit before provider or output setup. Keep arbitrary
+  valid synthetic provenance replayable: compact artifact JSON within unchanged
+  size caps and only index public-real snapshot IDs in the admission registry.
 - Add an optional caller-frozen answer shape through the Python API, configured
   client and recorded CLI. Select one answer query separately from supporting
   evidence; preserve rejected attempts and the frozen contract in reports,

@@ -30,7 +30,7 @@ The version-1 contract has exactly these fields (version defaults to 1):
 
 | Field | Meaning |
 |---|---|
-| `columns` | 1..100 unique named columns in exact output order |
+| `columns` | 1..64 unique named columns in exact output order, matching the SQL worker limit |
 | Column `type` | `integer`, `number` or `string` |
 | Column `nullable` | Boolean; defaults to false |
 | `min_rows`, `max_rows` | Required integers; `0 <= min_rows <= max_rows <= 200` |
@@ -117,6 +117,15 @@ action. During a normal turn, a later provider turn can correct it within the
 original limits. Once `finish_only` is true, any rejected finish ends the run;
 there is no additional provider request or budget extension. Invalid JSON or
 invalid tool-call envelopes still terminate under the existing protocol rules.
+
+Within the 12000-byte tool-argument bound, each independently valid `questions`
+or `conditions` array is retained before other finish fields are checked. A
+rejected old-style citation or model-authored contract cannot erase those
+blockers on a later attempt. Each field must be an array of at most 20 strings,
+each at most 8192 characters; an invalid field is rejected without treating its
+contents as blockers, while a valid other field still persists. Blank items are
+rejected and nonblank blockers retained. The existing combined 20-item/24000-byte
+state limit and trusted-caller resolution requirement still apply.
 
 `report.json`, `report.html` and the notebook show the selected answer, separate
 supports, normalized contract and its canonical SHA-256. Source provenance stays

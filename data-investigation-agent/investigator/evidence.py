@@ -6,6 +6,7 @@ import math
 from pathlib import Path
 
 from .bundle import safe_read
+from .sql_worker import MAX_QUERY_COLUMNS
 
 
 def load_answer_contract(path):
@@ -38,8 +39,8 @@ def freeze_answer_contract(value):
     if type(value.get("version", 1)) is not int or value.get("version", 1) != 1:
         raise ValueError("Answer contract version must be 1")
     columns = value.get("columns")
-    if not isinstance(columns, list) or not 1 <= len(columns) <= 100:
-        raise ValueError("Answer contract requires 1..100 ordered columns")
+    if not isinstance(columns, list) or not 1 <= len(columns) <= MAX_QUERY_COLUMNS:
+        raise ValueError(f"Answer contract requires 1..{MAX_QUERY_COLUMNS} ordered columns")
     normalized, names = [], set()
     for column in columns:
         if not isinstance(column, dict) or set(column) - {"name", "type", "nullable"}:

@@ -38,6 +38,16 @@ must be flat declared filenames; linked/non-regular files are rejected. By defau
 empty CSV cells become NULL; unspecified types default to TEXT. Declared INTEGER
 values must fit SQLite's signed 64-bit range and REAL values must be finite.
 
+Accepted synthetic provenance metadata is preserved in exported evidence,
+including nested arrays and synthetic `snapshot_id` values that are lists or
+objects. Only the public-real schema uses a string snapshot ID as an admission
+registry key. Exports use compact JSON, including JSON embedded in HTML and
+notebooks, so indentation cannot multiply the size of deeply nested metadata.
+Writers and replay share the existing 128 KiB manifest and 8 MiB per-artifact
+limits. An oversized export fails before writing a completed manifest; limits
+are not raised and provenance is not truncated. Historical evidence retains
+its original frozen runtime and bytes.
+
 For an explicitly typed source that distinguishes NULL from empty TEXT, the
 catalog may set `"csv_null_encoding": "backslash-N"`. In that opt-in mode only
 the exact two-character field `\N` becomes NULL, including a quoted `"\N"`

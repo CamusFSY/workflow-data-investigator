@@ -7,6 +7,9 @@ import sys
 import time
 from pathlib import Path
 
+# Caller contracts import the same limit enforced by this isolated SQL worker.
+MAX_QUERY_COLUMNS = 64
+
 FUNCTIONS = set("""
 abs avg count sum total min max round coalesce ifnull nullif
 date time datetime julianday unixepoch strftime timediff
@@ -32,7 +35,7 @@ def main():
     conn.execute("PRAGMA temp_store=MEMORY")
     conn.setlimit(sqlite3.SQLITE_LIMIT_LENGTH, 65536)
     conn.setlimit(sqlite3.SQLITE_LIMIT_SQL_LENGTH, 8192)
-    conn.setlimit(sqlite3.SQLITE_LIMIT_COLUMN, 64)
+    conn.setlimit(sqlite3.SQLITE_LIMIT_COLUMN, MAX_QUERY_COLUMNS)
     conn.setlimit(sqlite3.SQLITE_LIMIT_EXPR_DEPTH, 50)
     conn.setlimit(sqlite3.SQLITE_LIMIT_COMPOUND_SELECT, 10)
     conn.setlimit(sqlite3.SQLITE_LIMIT_VARIABLE_NUMBER, 256)

@@ -2,10 +2,11 @@ import html
 import json
 from pathlib import Path
 
-from .bundle import digest
+from .bundle import digest, safe_read
+from .artifact_format import MAX_MANIFEST_BYTES, MAX_ARTIFACT_BYTES, json_text, write_artifact
 from .provenance import data_label
 
-REPLAY_FILES = ["__init__.py", "bundle.py", "runtime.py", "sql_worker.py", "analytics.py", "replay.py", "provenance.py", "evidence.py"]
+REPLAY_FILES = ["__init__.py", "bundle.py", "runtime.py", "sql_worker.py", "analytics.py", "replay.py", "provenance.py", "evidence.py", "artifact_format.py"]
 RATE_NOTICE = ("通用分析/图表仅计算选定查询列的 successes / total；non_successes 是 total - successes，"
                "不能据此自动解释为准时/延误。列名和 source_evidence_id 保留来源，不代表已验证业务口径。"
                "模型/脚本的自由文本解读、因果说法和业务批准仍未经算术验证。")
@@ -17,10 +18,6 @@ sys.path.insert(0, str(root / "_replay"))
 from investigator.replay import verify
 verify(root)
 """
-
-
-def pretty(value):
-    return json.dumps(value, ensure_ascii=False, indent=2, allow_nan=False)
 
 
 def cell(kind, source):
@@ -61,7 +58,7 @@ def notebook(events, outcome):
     scope = f"\n\n交付状态：{outcome['status']}。{qualification(outcome)}"
     roles = evidence_roles(outcome)
     if roles is not None:
-        scope += "\n\n答案证据与支持证据（调用方契约；不代表数值正确）：\n\n```json\n" + pretty(roles) + "\n```"
+        scope += "\n\n答案证据与支持证据（调用方契约；不代表数值正确）：\n\n```json\n" + json_text(roles) + "\n```"
     if answer.get("conditions"):
         scope += "\n\n适用假设（未经确认）：\n\n" + "\n".join("- " + q for q in answer["conditions"])
     if pending:
@@ -74,7 +71,7 @@ def notebook(events, outcome):
              "错误也会重放并与原错误比较；可信调用方的澄清只重放原记录，不重新核验来源权威性。"
              "请从本 notebook 所在目录启动 kernel。"
              "分析函数源代码随产物保存在 _replay/investigator/analytics.py。"
-             "这不是任意 Python Agent 执行入口。\n\n" + RATE_NOTICE + "\n\n来源记录（声明及冻结审核记录，不是重新认证）：\n\n```json\n" + pretty(outcome.get("provenance", {})) + "\n```"),
+             "这不是任意 Python Agent 执行入口。\n\n" + RATE_NOTICE + "\n\n来源记录（声明及冻结审核记录，不是重新认证）：\n\n```json\n" + json_text(outcome.get("provenance", {})) + "\n```"),
         cell("code", "import sys, json\nfrom pathlib import Path\n"
              "sys.dont_write_bytecode = True\nroot = Path.cwd()\n"
              "sys.path.insert(0, str(root / '_replay'))\n"
@@ -91,7 +88,7 @@ def notebook(events, outcome):
         encoded = json.dumps(event, ensure_ascii=False, allow_nan=False)
         cells.append(cell("code", f"event = json.loads({encoded!r})\n"
                           "actual = replay.check(event)\n"
-                          "print(json.dumps(actual, ensure_ascii=False, indent=2))\n"))
+                          "print(json.dumps(actual, ensure_ascii=False, allow_nan=False))\n"))
     return {"nbformat": 4, "nbformat_minor": 5, "metadata": {
         "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
         "language_info": {"name": "python", "version": "3.11"},
@@ -119,7 +116,7 @@ def report_html(events, outcome):
         support_links = " ".join(f'<a href="#{esc(ref)}">[{esc(ref)}]</a>' for ref in roles["supporting_evidence_ids"]) or "无"
         role_html = (f'<p><strong>答案证据：</strong>{answer_link}；<strong>支持证据：</strong>{support_links}</p>'
                      '<p>来源、类型、形状校验不代表数值正确或支持内容相关。</p>'
-                     '<details><summary>调用方冻结的答案契约</summary><pre>' + esc(pretty(roles)) + '</pre></details>')
+                     '<details><summary>调用方冻结的答案契约</summary><pre>' + esc(json_text(roles)) + '</pre></details>')
     questions = "".join(f"<li>{esc(q)}</li>" for q in answer["questions"])
     conditions = "".join(f"<li>{esc(q)}</li>" for q in answer.get("conditions", []))
     notice = qualification(outcome)
@@ -146,8 +143,8 @@ def report_html(events, outcome):
             f'<p>{esc(event["public_note"])}</p>'
             f'<p class="muted">{batch_position}</p>'
             f'<p class="muted">上一执行动作：{esc(str(event.get("after_evidence") or "开始"))}</p>'
-            f'<h4>实际输入</h4><pre>{esc(pretty(event["input"]))}</pre>'
-            f'<h4>实际返回</h4><pre>{esc(pretty(event["result"]))}</pre></details>')
+            f'<h4>实际输入</h4><pre>{esc(json_text(event["input"]))}</pre>'
+            f'<h4>实际返回</h4><pre>{esc(json_text(event["result"]))}</pre></details>')
         if event["tool"] == "plot" and ok:
             data = event["result"]["data"]
             columns = data["source_columns"]
@@ -201,7 +198,7 @@ figure{{margin:20px 0}}img{{width:100%;max-height:300px}}figcaption{{font-size:1
 <p>本目录运行 <code>python replay.py</code>。离线重算全部实际查询与固定统计操作，
 逐项比较原结果；不调用 API。Notebook 未预填执行输出。</p></section>
 <section class="card"><h2>数据来源与快照</h2><p>冻结的来源、许可及本地审核记录；不代表重新核验来源或隐私保证。</p>
-<pre>{esc(pretty(outcome.get("provenance", {})))}</pre></section>
+<pre>{esc(json_text(outcome.get("provenance", {})))}</pre></section>
 <h2>从目标到交付的实际动作</h2><p class="muted">展开查看输入与返回。
 下一动作的公开说明展示操作变化；不收集模型私有推理。引用存在不代表结论语义已被自动证明。</p>
 {"".join(trail)}</main></html>"""
@@ -216,25 +213,24 @@ def export(output, manifest, events, outcome):
         data = Path(__file__).with_name(name).read_bytes()
         (replay_dir / name).write_bytes(data)
         hashes[name] = digest(data)
-    (output / "replay.py").write_text(REPLAY_SCRIPT, encoding="utf-8")
-    (output / "report.json").write_text(pretty(outcome) + "\n", encoding="utf-8")
-    (output / "investigation.ipynb").write_text(pretty(notebook(events, outcome)), encoding="utf-8")
-    (output / "report.html").write_text(report_html(events, outcome), encoding="utf-8")
+    write_artifact(output / "replay.py", REPLAY_SCRIPT)
+    write_artifact(output / "report.json", json_text(outcome) + "\n")
+    write_artifact(output / "investigation.ipynb", json_text(notebook(events, outcome)))
+    write_artifact(output / "report.html", report_html(events, outcome))
     for event in events:
         if event["tool"] == "plot" and event["result"]["ok"]:
-            (output / f"chart-{event['evidence_id']}.svg").write_text(
-                event["result"]["data"]["svg"], encoding="utf-8")
+            write_artifact(output / f"chart-{event['evidence_id']}.svg", event["result"]["data"]["svg"])
     artifact_names = ["trace.jsonl", "report.json", "investigation.ipynb", "report.html", "replay.py",
                       "response_diagnostics.jsonl"]
     artifact_names += [f"chart-{e['evidence_id']}.svg" for e in events
                        if e["tool"] == "plot" and e["result"]["ok"]]
     full = {"format_version": 1, "input": manifest, "runtime": hashes,
-            "artifacts": {name: digest((output / name).read_bytes()) for name in artifact_names},
+            "artifacts": {name: digest(safe_read(output, name, MAX_ARTIFACT_BYTES)) for name in artifact_names},
             "note": "Integrity/replay hashes, not a signed provenance or live spending ledger."}
     if outcome.get("evidence_interface") == "answer_roles_v1":
         contract_file = output / "answer_contract.json"
-        contract_file.write_text(pretty(outcome["answer_contract"]) + "\n", encoding="utf-8")
+        write_artifact(contract_file, json_text(outcome["answer_contract"]) + "\n")
         pin = digest(contract_file.read_bytes())
         full["artifacts"][contract_file.name] = pin
         full["answer_contract"] = {"file": contract_file.name, "sha256": pin}
-    (output / "manifest.json").write_text(pretty(full) + "\n", encoding="utf-8")
+    write_artifact(output / "manifest.json", json_text(full) + "\n", limit=MAX_MANIFEST_BYTES)

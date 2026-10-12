@@ -236,6 +236,21 @@ class Runtime:
             if schema is None:
                 raise ValueError(f"Unknown tool: {name}")
             if name == "finish" and self.answer_contract is not None:
+                # Recoverable structural errors must not erase independently valid
+                # blockers. Bound the whole payload before accepting any state;
+                # malformed fields are rejected below, never coerced into questions.
+                if len(json.dumps(args, ensure_ascii=False, allow_nan=False).encode()) > 12000:
+                    raise ValueError("Tool arguments exceed 12 KiB")
+                if isinstance(args, dict):
+                    blockers = {"questions": [], "conditions": []}
+                    for field in blockers:
+                        values = args.get(field, [])
+                        try:
+                            validate(values, schema["properties"][field])
+                        except ValueError:
+                            continue
+                        blockers[field] = values
+                    self.remember_blockers(blockers["questions"], blockers["conditions"], evidence_id)
                 validate_finish_structure(args, schema)
             else:
                 validate(args, schema)

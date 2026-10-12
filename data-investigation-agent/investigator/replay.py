@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 
 from .bundle import digest, safe_read
+from .artifact_format import MAX_MANIFEST_BYTES, MAX_ARTIFACT_BYTES
 from .runtime import Runtime
 from .provenance import verify_frozen_provenance, data_label
 from .evidence import freeze_answer_contract, contract_digest
@@ -13,7 +14,7 @@ class Replay:
         self.root = Path(root).absolute()
         # A valid 64 KiB catalog can also carry synthetic provenance metadata;
         # leave bounded room for that metadata plus input/runtime/artifact hashes.
-        manifest = json.loads(safe_read(self.root, "manifest.json", 131072))
+        manifest = json.loads(safe_read(self.root, "manifest.json", MAX_MANIFEST_BYTES))
         if not isinstance(manifest, dict) or not isinstance(manifest.get("input"), dict):
             raise ValueError("Invalid manifest: expected an object with an input object")
         for label, mapping in (("input.files", manifest["input"].get("files")),
@@ -36,7 +37,7 @@ class Replay:
                 # Kernel execution/auto-save changes notebook outputs and metadata.
                 # Embedded events are checked against the hashed original trace below.
                 continue
-            if digest(safe_read(self.root, name, 8 * 1024**2)) != expected:
+            if digest(safe_read(self.root, name, MAX_ARTIFACT_BYTES)) != expected:
                 raise ValueError(f"Artifact hash mismatch: {name}")
         lines = (self.root / "trace.jsonl").read_text().splitlines()
         self.events = {event["evidence_id"]: event for event in map(json.loads, lines)}
@@ -45,7 +46,7 @@ class Replay:
         self.provenance = verify_frozen_provenance(manifest["input"], source_files)
         contract = None
         reference = manifest.get("answer_contract")
-        report = json.loads(safe_read(self.root, "report.json", 8 * 1024**2))
+        report = json.loads(safe_read(self.root, "report.json", MAX_ARTIFACT_BYTES))
         if not isinstance(report, dict):
             raise ValueError("Invalid report: expected an object")
         if reference is not None:

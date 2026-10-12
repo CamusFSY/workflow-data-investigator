@@ -136,9 +136,14 @@ def verify_frozen_provenance(manifest, files):
         raise ValueError("Invalid frozen provenance")
     if not isinstance(recorded.get("declaration"), dict):
         raise ValueError("Invalid frozen provenance declaration")
-    approval = recorded.get("approval", {})
-    snapshot_id = recorded.get("declaration", {}).get("snapshot_id")
-    actual = source_provenance(catalog, files, registry={snapshot_id: approval})
+    registry = {}
+    declared = catalog.get("provenance")
+    if isinstance(declared, dict) and declared.get("type") == "public-real":
+        # Only public declarations require a string registry key. Synthetic
+        # metadata is preserved verbatim and may contain a list/dict snapshot_id.
+        snapshot_id = public_declaration(catalog)["snapshot_id"]
+        registry[snapshot_id] = recorded.get("approval", {})
+    actual = source_provenance(catalog, files, registry=registry)
     if actual != recorded or manifest.get("synthetic") is not (actual["type"] == "synthetic"):
         raise ValueError("Frozen provenance differs from input declaration or files")
     return actual
