@@ -2,7 +2,8 @@
 
 Public-data preparation is documented in [public-data.md](docs/public-data.md).
 Its registry starts empty; existing synthetic examples remain unchanged.
-This is not a real-data benchmark result.
+The separate [frozen live evaluation](docs/live-evaluation.md) reports a small
+adapted public-data comparison, including failures and reproducibility limits.
 The [WDI preparation guide](docs/wdi-smoke.md) prepares one pinned snapshot from
 existing raw API files and source records, without network or model calls.
 
@@ -91,7 +92,8 @@ requires explicit `allow_data_sharing=True`;
 the caller still owns client configuration, retries, timeouts and costs.
 The [public offline example](examples/recorded_investigation.py) and
 [configured-client example](examples/configured_client.py) show both paths.
-They are tested offline; no end-to-end live provider run is claimed.
+Those examples are tested offline. The separate [live evaluation](docs/live-evaluation.md)
+covers one model configuration and does not validate every SDK/client path.
 
 | Tool | Use |
 |---|---|

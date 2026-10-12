@@ -154,3 +154,7 @@ No existing scorer or completed experiment is reinterpreted by this change. The
 historical results keep their original scoring contracts. The fresh offline tests
 establish interface behavior and compatibility, not improved live accuracy or a
 successful autonomous model correction.
+
+A separate [live comparison](live-evaluation.md) records a model correcting a
+shape error after feedback, alongside a different trial's contradicted prose.
+Its small, separated groups do not establish general accuracy improvement.

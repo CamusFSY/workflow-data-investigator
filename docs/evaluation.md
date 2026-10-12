@@ -38,7 +38,7 @@ For a historical run, prefer its own bundled `replay.py`; installed-runtime repl
 is version-sensitive. Successful replay checks consistency against the saved
 inputs/results, not source authority or the truth of the final explanation.
 
-## Future model evidence
+## Live evaluation and remaining limits
 
 The optional [answer contract](../data-investigation-agent/docs/evidence-roles.md)
 is checked separately from numerical correctness. Fresh synthetic tests include
@@ -48,12 +48,17 @@ The latter passes the interface and fails a separate CSV-derived test oracle.
 No measured benchmark answer is used to tune these tests. The offline CLI and
 configured-client double check exports and replay, not live model improvement.
 
-No end-to-end live model result is included in this distribution.
-When recording future evidence, retain successful and unsuccessful attempts and
-keep old outputs unchanged. A newly generated scripted report must not be
+The [frozen live evaluation](../data-investigation-agent/docs/live-evaluation.md)
+reports 13 declared trials at a pinned runtime revision. It separates three
+prospective families from diagnostic and previously exposed cases, and retains
+both a feedback-driven shape correction and a contradicted prose claim. Its
+AI-assisted review and limited public reproducibility are described there.
+
+When recording further evidence, retain successful and unsuccessful attempts
+and keep old outputs unchanged. A newly generated scripted report must not be
 presented as a previous model-driven result.
 
-A new model evaluation would need a declared task population, independent data,
+A broader model evaluation would need a declared task population, independent data,
 fixed budgets, treatment of failures and explicit authority/metric definitions.
 It should report all assigned cases and separate intent adoption, numerical
 validity and explanation support. The offline tests and demos make no paid model

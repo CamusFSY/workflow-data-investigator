@@ -13,18 +13,22 @@ standalone replay. The runtime uses only Python's standard library.
 
 Local preparation also supports an explicit [public-data snapshot contract](data-investigation-agent/docs/public-data.md).
 Its registry starts empty. The [fixed WDI smoke recipe](data-investigation-agent/docs/wdi-smoke.md)
-can explicitly admit one verified source snapshot; no live result or external
-benchmark score is claimed. Admission pins source, license and every input byte.
+can explicitly admit one verified source snapshot. Admission pins source, license
+and every input byte. A separate [frozen live evaluation](data-investigation-agent/docs/live-evaluation.md)
+reports a small adapted BIRD comparison, including its failures and limits.
+Read the [technical report draft](docs/research/technical-report/workflow-data-investigator-technical-report.pdf)
+for the study design, observed costs and remaining limitations.
 
 中文：用合成数据调查“指标下降是否真的代表业务恶化”，保留查询、错误、口径和可复跑证据。
 
-[Quickstart](#quickstart) · [Demo results](#demo-results) · [Documentation](docs/README.md) ·
+[Quickstart](#quickstart) · [Demo results](#demo-results) · [Live evaluation](data-investigation-agent/docs/live-evaluation.md) · [Research](#research) · [Documentation](docs/README.md) ·
 [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
 **Alpha.** Included demos are labeled **SCRIPTED MOCK** or **OFFLINE RECORDED
 RESPONSES**. They run real tools with fixed provider behavior; they do not prove
-model autonomy. A caller-supplied model can use the Python interface, but no
-end-to-end live integration or external adoption is claimed. The CI badge shows
+model autonomy. A caller-supplied model can use the Python interface; the linked
+live evaluation covers one configuration, not general provider compatibility or
+external adoption. The CI badge shows
 `main`; it does not certify an unmerged branch. No package-index release is available.
 
 ## Quickstart
@@ -133,8 +137,16 @@ limits and failure behavior.
 Use synthetic inputs or an explicitly reviewed public snapshot. The host and caller's transport are trusted code,
 not an arbitrary-code sandbox. Generic analysis remains an untyped ratio: it
 cannot establish metric authority, causation or statistical significance.
-[Evaluation scope](docs/evaluation.md) separates what the checks prove from
-what still needs live validation.
+[Evaluation scope](docs/evaluation.md) separates offline checks, observed live
+behavior and remaining validation gaps.
+
+## Research
+
+The [technical report](docs/research/technical-report/workflow-data-investigator-technical-report.pdf), Evidence Roles and Answer Contracts in Data Analysis Agents, documents a small same-build validation on three fresh BIRD Mini-Dev question families. Explicit mode passed strict end-to-end checks in 3/3 families versus legacy mode in 2/3. Both modes answered the substantive questions correctly; the difference was one output-shape repair.
+
+Explicit mode used 14 requests and CNY 0.102346, compared with 11 requests and CNY 0.079332 for legacy mode. Four exposed regressions passed numerical checks, but one still failed end-to-end because its summary miscounted a group in the correct ranking. The report separates structure, numerical verification, and narrative grounding. It does not establish arithmetic superiority, statistical significance, or an official BIRD score.
+
+Status: technical report draft, with [editable source](docs/research/technical-report/report.tex); no claim of conference acceptance or peer review. An earlier, separate [64-episode clarification pilot](docs/research/research-overview.md) provides historical context and is not pooled with the product evaluation.
 
 ## Contribute and verify
 

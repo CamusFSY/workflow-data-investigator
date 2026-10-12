@@ -91,8 +91,9 @@ an explicit caller decision; without it the adapter fails before transport use.
 The [configured-client example](../examples/configured_client.py) accepts an
 already configured `client.chat.completions.create(...)` interface and passes
 the remaining timeout to it. Importing the example does nothing. Its installed-
-wheel contract is tested with an SDK double; **no end-to-end live run has been
-validated**. The caller supplies the SDK/client configuration and credentials
+wheel contract is tested with an SDK double. A separate [live evaluation](live-evaluation.md)
+covers one `deepseek-flash` configuration; it does not certify every SDK/client
+path or backend. The caller supplies the SDK/client configuration and credentials
 locally; they are not toolkit arguments or exported evidence.
 
 All three Python entry points above, including the legacy budget-reference callback
@@ -198,9 +199,11 @@ displayed. No strict-beta endpoint/schema conversion is introduced; current
 schemas contain optional fields and use the regular tool-calling contract.
 
 The request options, feedback IDs, single invocation on exceptions and absence
-of private reasoning are tested using offline doubles. This is not a live API
-compatibility or cost verification. Run any separately authorized live check
-using your own configured transport and cost controls.
+of private reasoning are tested using offline doubles. Those checks alone do
+not verify live API compatibility or costs. The [live evaluation](live-evaluation.md)
+reports a bounded configuration and estimated costs, not general compatibility
+or audited billing. Further live checks require the caller's configured transport
+and cost controls.
 
 ## Trusted host and interpretation boundaries
 

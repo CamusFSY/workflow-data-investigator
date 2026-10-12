@@ -17,6 +17,9 @@ repository; no separate project, account or historical experiment is required.
 | Separate the selected answer from supporting evidence and freeze its shape | [Answer evidence contract](../data-investigation-agent/docs/evidence-roles.md) |
 | Understand the loop, tools and trust boundaries | [Architecture](architecture.md) |
 | Understand which claims are supported by tests | [Evaluation and replay](evaluation.md) |
+| Read the frozen live comparison, failures and limits | [Live evaluation](../data-investigation-agent/docs/live-evaluation.md) |
+| Read the product technical report draft and build its PDF | [Technical report and source](research/technical-report/README.md) |
+| Read the separate earlier clarification pilot and its limits | [Historical research overview](research/research-overview.md) |
 | Update consumers of older rate fields | [Neutral-rate compatibility](../data-investigation-agent/docs/neutral-rate-compatibility.md) |
 
 ## Contribute and maintain

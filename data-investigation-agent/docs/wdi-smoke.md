@@ -3,7 +3,8 @@
 This optional example prepares one fixed World Bank World Development Indicators
 snapshot for a descriptive comparison. The repository includes the preparation
 code and synthetic tests; the original data, source records and numerical
-reference answers are not distributed here. No live model result is claimed.
+reference answers are not distributed here. This recipe claims no live WDI
+model result; the separate [live evaluation](live-evaluation.md) uses BIRD data.
 
 ## Preparation
 

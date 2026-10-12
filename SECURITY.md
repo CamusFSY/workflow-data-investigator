@@ -1,8 +1,10 @@
 # Security and responsible reporting
 
-This is an early-stage local toolkit, tested with synthetic data. It is not a
-hostile-code sandbox or a production data-governance system. No stable release
-support or security-response SLA is currently claimed.
+This is an early-stage local toolkit. Its security and regression checks use
+synthetic data; the separate [public-data live evaluation](data-investigation-agent/docs/live-evaluation.md)
+is not a security audit. It is not a hostile-code sandbox or a production
+data-governance system. No stable release support or security-response SLA is
+currently claimed.
 
 ## Report privately
 

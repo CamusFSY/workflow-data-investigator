@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Add the newly authored product technical report draft by Yiting Feng, with
+  editable LaTeX, a locally built PDF and build instructions. Link a separate
+  historical clarification overview without pooling its episodes with the
+  product study or claiming review of the earlier manuscript.
+- Document the frozen 13-trial live comparison, including a shape correction
+  and a prose contradiction. Separate prospective and previously exposed cases,
+  record data attribution and review limits, and update evaluation links.
 - Preserve independently valid questions and assumptions when an optional-contract
   finish is rejected for an unrelated structural error. Reject contracts above the
   SQL worker's 64-column limit before provider or output setup. Keep arbitrary
@@ -21,7 +28,8 @@
   empty. Preserve data classification through reports, charts, notebooks and replay.
 - Add opt-in `thinking="disabled"` request construction and configured-client
   `extra_body` mapping, without changing generic defaults, retries or accounting.
-  Thinking-enabled tool histories remain unsupported; checks are offline only.
+  Thinking-enabled tool histories remain unsupported; the request-construction
+  checks use offline doubles. See the separate live evaluation for observed runs.
 - Add a documentation index, reproducible synthetic output guide, architecture
   reference and repository badges for main CI, Apache-2.0, tested Python and alpha status.
 - Make installation and compatibility guidance self-contained in this repository.
