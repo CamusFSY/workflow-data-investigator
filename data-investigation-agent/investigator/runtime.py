@@ -6,6 +6,9 @@ from pathlib import Path
 
 from .analytics import analyze, bar_chart
 from .bundle import CONTEXT_FILES, safe_read
+from .provenance import source_provenance
+from .evidence import (FinishValidationError, freeze_answer_contract, role_finish_tool,
+                       validate_evidence_roles, validate_finish_structure, reject)
 
 
 def tool(name, description, properties, required):
@@ -82,13 +85,19 @@ def validate(value, schema):
 
 
 class Runtime:
-    def __init__(self, snapshot):
+    def __init__(self, snapshot, *, provenance=None, answer_contract=None):
         self.snapshot = Path(snapshot)
+        self.provenance = copy.deepcopy(provenance) if provenance is not None else source_provenance(
+            json.loads(safe_read(self.snapshot, "catalog.json", 65536)))
         self.results = {}
         self.names = {}
         self.finished = None
         self.clarifications = []
         self.clarification_block = None
+        self.answer_contract = freeze_answer_contract(answer_contract)
+        self.tools = copy.deepcopy(TOOLS)
+        if self.answer_contract is not None:
+            self.tools[-1] = role_finish_tool(self.tools[-1])
 
     def clarification_state(self):
         return copy.deepcopy(self.clarifications)
@@ -184,15 +193,24 @@ class Runtime:
         self.remember_blockers(args["questions"], args.get("conditions", []), evidence_id)
         conditions = self.open_conditions()
         if not args["summary"].strip() or not args["findings"]:
+            if self.answer_contract is not None:
+                reject("finish_argument_empty", "summary" if not args["summary"].strip() else "findings",
+                       "Provide a nonblank summary and nonempty findings")
             raise ValueError("Provide a summary and cited findings")
         refs = []
         for finding in args["findings"]:
+            if self.answer_contract is not None:
+                if not finding["text"].strip():
+                    reject("finish_finding_empty", "findings", "Each finding needs nonblank text")
+                continue
             if not finding["text"].strip() or not finding["evidence"]:
                 raise ValueError("Each finding needs text and evidence")
             for ref in finding["evidence"]:
                 if ref not in self.results or not self.results[ref]["ok"]:
                     raise ValueError(f"Unknown or unsuccessful evidence reference: {ref}")
                 refs.append(ref)
+        if self.answer_contract is not None:
+            refs = validate_evidence_roles(args, self.results, self.names, self.answer_contract)
         pending = self.open_questions()
         if args["status"] == "needs_clarification" and not self.open_blockers():
             raise ValueError("Clarification must ask specific questions")
@@ -213,11 +231,14 @@ class Runtime:
         try:
             if evidence_id in self.results:
                 raise ValueError("Evidence IDs cannot be reused")
-            schema = next((t["function"]["parameters"] for t in TOOLS
+            schema = next((t["function"]["parameters"] for t in self.tools
                            if t["function"]["name"] == name), None)
             if schema is None:
                 raise ValueError(f"Unknown tool: {name}")
-            validate(args, schema)
+            if name == "finish" and self.answer_contract is not None:
+                validate_finish_structure(args, schema)
+            else:
+                validate(args, schema)
             if len(json.dumps(args, ensure_ascii=False).encode()) > 12000:
                 raise ValueError("Tool arguments exceed 12 KiB")
             if name == "read_context":
@@ -232,7 +253,7 @@ class Runtime:
                 data = {**analyze(self.rows(args["evidence_id"]), args),
                         "source_evidence_id": args["evidence_id"]}
             elif name == "plot":
-                data = {**bar_chart(self.rows(args["evidence_id"]), args),
+                data = {**bar_chart(self.rows(args["evidence_id"]), args, provenance=self.provenance),
                         "source_evidence_id": args["evidence_id"]}
             else:
                 data = self.finish(args, evidence_id)
@@ -241,6 +262,8 @@ class Runtime:
         except Exception as exc:
             result = {"ok": False, "error": {
                 "type": type(exc).__name__, "message": str(exc)[:500]}}
+            if isinstance(exc, FinishValidationError):
+                result["error"].update(code=exc.code, field=exc.field)
             if name == "finish" and self.clarifications:
                 result["clarifications"] = self.clarification_state()
             if name == "finish" and self.clarification_block:

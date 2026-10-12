@@ -11,6 +11,11 @@ A small Python toolkit for exploring local synthetic CSV data. A provider choose
 bounded tools, observes their results, and returns an HTML report, notebook and
 standalone replay. The runtime uses only Python's standard library.
 
+Local preparation also supports an explicit [public-data snapshot contract](data-investigation-agent/docs/public-data.md).
+Its registry starts empty. The [fixed WDI smoke recipe](data-investigation-agent/docs/wdi-smoke.md)
+can explicitly admit one verified source snapshot; no live result or external
+benchmark score is claimed. Admission pins source, license and every input byte.
+
 中文：用合成数据调查“指标下降是否真的代表业务恶化”，保留查询、错误、口径和可复跑证据。
 
 [Quickstart](#quickstart) · [Demo results](#demo-results) · [Documentation](docs/README.md) ·
@@ -74,6 +79,12 @@ Every investigation exports:
 A successful replay checks the recorded calculations. It does not approve a
 business definition or verify every sentence in the provider's explanation.
 
+With an optional [answer contract](data-investigation-agent/docs/evidence-roles.md),
+callers can require one explicitly selected answer query and keep supporting
+evidence separate. Reports and replay retain the caller's expected column types
+and row bounds. These checks validate structure; numerical correctness remains
+a separate assessment. A runnable offline CLI example is included in that guide.
+
 ## Use your own synthetic CSV
 
 A bundle contains a catalog, metric definition, dashboard SQL, request and declared
@@ -119,7 +130,7 @@ scripted and recorded providers exercise the same protocol offline. See the
 [architecture and trust boundaries](docs/architecture.md) for component links,
 limits and failure behavior.
 
-Use synthetic inputs only. The host and caller's transport are trusted code,
+Use synthetic inputs or an explicitly reviewed public snapshot. The host and caller's transport are trusted code,
 not an arbitrary-code sandbox. Generic analysis remains an untyped ratio: it
 cannot establish metric authority, causation or statistical significance.
 [Evaluation scope](docs/evaluation.md) separates what the checks prove from

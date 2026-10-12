@@ -54,7 +54,8 @@ class ChatCompletionsProvider:
     mode = "live"
     label = "Chat Completions / caller-supplied transport"
 
-    def __init__(self, transport, *, model, allow_data_sharing=False, max_output_tokens=2048):
+    def __init__(self, transport, *, model, allow_data_sharing=False, max_output_tokens=2048,
+                 thinking=None):
         if allow_data_sharing is not True:
             raise ValueError("Explicit allow_data_sharing=True is required; context and tool results may leave this host")
         if not callable(transport):
@@ -63,6 +64,9 @@ class ChatCompletionsProvider:
             raise ValueError("model must be a public identifier of 1..128 ASCII characters")
         if type(max_output_tokens) is not int or not 1 <= max_output_tokens <= 8192:
             raise ValueError("max_output_tokens must be 1..8192")
+        if thinking not in (None, "disabled"):
+            raise ValueError("thinking must be None or disabled; thinking-enabled tool history is unsupported")
+        self.thinking = thinking
         self.transport = transport
         self.model = model
         self.max_output_tokens = max_output_tokens
@@ -86,6 +90,9 @@ class ChatCompletionsProvider:
             "tool_choice": "auto", "temperature": 0,
             "max_tokens": self.max_output_tokens, "stream": False,
         }
+        if self.thinking == "disabled":
+            request["thinking"] = {"type": "disabled"}
+            self.last_observation["thinking_requested"] = "disabled"
         try:
             response = self._send(request, timeout_seconds)
         except TransportFailure as exc:
@@ -107,10 +114,11 @@ class DeepSeekProvider(ChatCompletionsProvider):
     """Backward-compatible callback signature for existing caller-owned accounting."""
     label = "DeepSeek / caller-controlled transport"
 
-    def __init__(self, transport, *, model, parent_budget_reference):
+    def __init__(self, transport, *, model, parent_budget_reference, thinking=None, max_output_tokens=2048):
         if not callable(transport) or not model or not parent_budget_reference:
             raise ValueError("Supply an authorized parent transport, model, and existing budget reference")
-        super().__init__(transport, model=model, allow_data_sharing=True)
+        super().__init__(transport, model=model, allow_data_sharing=True,
+                         thinking=thinking, max_output_tokens=max_output_tokens)
         # This identifier is not a new budget or accounting store.
         self.parent_budget_reference = parent_budget_reference
 

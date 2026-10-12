@@ -11,7 +11,10 @@ repository; no separate project, account or historical experiment is required.
 | See expected outputs and reproduce each example | [Synthetic demo results](demo-output.md) |
 | Look up commands, exit codes and troubleshooting | [CLI and Python API](../data-investigation-agent/README.md) |
 | Describe and validate your CSV files | [Synthetic bundle format](../data-investigation-agent/docs/fixtures.md) |
+| Prepare a reviewed public snapshot and separate factual scoring from replay | [Public-data provenance](../data-investigation-agent/docs/public-data.md) |
+| Prepare one pinned public-data snapshot with caller-owned run controls | [WDI preparation guide](../data-investigation-agent/docs/wdi-smoke.md) |
 | Supply a callback, configured client or recorded responses | [Provider integration](../data-investigation-agent/docs/provider-integration.md) |
+| Separate the selected answer from supporting evidence and freeze its shape | [Answer evidence contract](../data-investigation-agent/docs/evidence-roles.md) |
 | Understand the loop, tools and trust boundaries | [Architecture](architecture.md) |
 | Understand which claims are supported by tests | [Evaluation and replay](evaluation.md) |
 | Update consumers of older rate fields | [Neutral-rate compatibility](../data-investigation-agent/docs/neutral-rate-compatibility.md) |

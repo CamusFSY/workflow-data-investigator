@@ -26,6 +26,7 @@ flowchart TD
 | [Provider loop](../data-investigation-agent/investigator/loop.py) | Offer tools, preserve feedback IDs, reserve a finish opportunity and record failures |
 | [Provider adapters](../data-investigation-agent/investigator/providers.py) | Adapt an explicitly authorized callback; no SDK, key discovery or billing ledger |
 | [Tool runtime](../data-investigation-agent/investigator/runtime.py) | Context/schema reads, queries, fixed arithmetic, charts and evidence-bound finish |
+| [Answer contract](../data-investigation-agent/investigator/evidence.py) | Optional caller-owned shape and distinct answer/support reference validation |
 | [SQL worker](../data-investigation-agent/investigator/sql_worker.py) | Execute allowed read-only SQLite operations in a short-lived process |
 | [Artifact exporter](../data-investigation-agent/investigator/artifacts.py) | Escape report text and export actual events, templates and integrity hashes |
 | [Replay verifier](../data-investigation-agent/investigator/replay.py) | Recompute saved actions and compare results, including recorded errors |
@@ -54,6 +55,12 @@ failure exports a failed report with the evidence already collected. Missing
 metric-authority questions remain unresolved until a trusted caller supplies an
 answer and source; deleting a question cannot approve a business definition.
 `needs_clarification` and `conditional` are not completed unconditional answers.
+
+When a caller explicitly supplies an answer contract, a bounded, JSON-encoded
+finish with invalid roles or shape returns a structured tool error. The next
+turn may correct it within the original limits. A rejected finalization-only
+finish still stops immediately. The contract is frozen before provider use and
+travels with reports, the notebook and replay; it contains no expected values.
 
 ## Trust and interpretation
 

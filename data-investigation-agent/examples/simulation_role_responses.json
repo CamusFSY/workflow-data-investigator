@@ -1,0 +1,176 @@
+{
+  "format_version": 1,
+  "origin": "hand-authored",
+  "responses": [
+    {
+      "model": "hand-authored-offline-example",
+      "choices": [
+        {
+          "message": {
+            "role": "assistant",
+            "content": "Read the supplied metric and inspect the custom simulation schema.",
+            "tool_calls": [
+              {
+                "id": "example_1",
+                "type": "function",
+                "function": {
+                  "name": "read_context",
+                  "arguments": "{\"document\": \"catalog\"}"
+                }
+              },
+              {
+                "id": "example_2",
+                "type": "function",
+                "function": {
+                  "name": "read_context",
+                  "arguments": "{\"document\": \"metric\"}"
+                }
+              },
+              {
+                "id": "example_3",
+                "type": "function",
+                "function": {
+                  "name": "inspect_schema",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          "finish_reason": "tool_calls"
+        }
+      ]
+    },
+    {
+      "model": "hand-authored-offline-example",
+      "choices": [
+        {
+          "message": {
+            "role": "assistant",
+            "content": "Deliberately exercise an incorrect column; this fixed example is not a model decision.",
+            "tool_calls": [
+              {
+                "id": "example_4",
+                "type": "function",
+                "function": {
+                  "name": "query",
+                  "arguments": "{\"sql\": \"SELECT reporting_week FROM simulation_runs\"}"
+                }
+              }
+            ]
+          },
+          "finish_reason": "tool_calls"
+        }
+      ]
+    },
+    {
+      "model": "hand-authored-offline-example",
+      "choices": [
+        {
+          "message": {
+            "role": "assistant",
+            "content": "Retain the error and inspect the available columns.",
+            "tool_calls": [
+              {
+                "id": "example_5",
+                "type": "function",
+                "function": {
+                  "name": "inspect_schema",
+                  "arguments": "{}"
+                }
+              }
+            ]
+          },
+          "finish_reason": "tool_calls"
+        }
+      ]
+    },
+    {
+      "model": "hand-authored-offline-example",
+      "choices": [
+        {
+          "message": {
+            "role": "assistant",
+            "content": "Use period_key and the supplied eligibility definition.",
+            "tool_calls": [
+              {
+                "id": "example_6",
+                "type": "function",
+                "function": {
+                  "name": "query",
+                  "arguments": "{\"sql\": \"SELECT period_key, SUM(CASE WHEN outcome = 'passed' THEN 1 ELSE 0 END) AS passed_runs, COUNT(*) AS eligible_runs FROM simulation_runs WHERE outcome IN ('passed', 'failed') GROUP BY period_key ORDER BY period_key\"}"
+                }
+              }
+            ]
+          },
+          "finish_reason": "tool_calls"
+        }
+      ]
+    },
+    {
+      "model": "hand-authored-offline-example",
+      "choices": [
+        {
+          "message": {
+            "role": "assistant",
+            "content": "Compute rates from the actual SQL results.",
+            "tool_calls": [
+              {
+                "id": "example_7",
+                "type": "function",
+                "function": {
+                  "name": "analyze",
+                  "arguments": "{\"operation\": \"compare_rates\", \"evidence_id\": \"e006\", \"period\": \"period_key\", \"baseline\": \"before\", \"current\": \"after\", \"successes\": \"passed_runs\", \"total\": \"eligible_runs\"}"
+                }
+              }
+            ]
+          },
+          "finish_reason": "tool_calls"
+        }
+      ]
+    },
+    {
+      "model": "hand-authored-offline-example",
+      "choices": [
+        {
+          "message": {
+            "role": "assistant",
+            "content": "Plot the observed counts, with their source-column bindings.",
+            "tool_calls": [
+              {
+                "id": "example_8",
+                "type": "function",
+                "function": {
+                  "name": "plot",
+                  "arguments": "{\"evidence_id\": \"e006\", \"label\": \"period_key\", \"successes\": \"passed_runs\", \"total\": \"eligible_runs\"}"
+                }
+              }
+            ]
+          },
+          "finish_reason": "tool_calls"
+        }
+      ]
+    },
+    {
+      "model": "hand-authored-offline-example",
+      "choices": [
+        {
+          "message": {
+            "role": "assistant",
+            "content": "Finish the fixed offline protocol example; numeric results are in the cited evidence.",
+            "tool_calls": [
+              {
+                "id": "example_9",
+                "type": "function",
+                "function": {
+                  "name": "finish",
+                  "arguments": "{\"status\": \"answered\", \"summary\": \"The SQL and rate comparison record the observed pass rates for this synthetic example. This fixed narration is not a new model judgment.\", \"findings\": [{\"text\": \"The query counts passed and failed simulation runs once each and excludes cancelled runs, as specified in the supplied metric. The arithmetic is attached in the cited evidence; it does not establish causation.\"}], \"questions\": [], \"answer_evidence_id\": \"e006\", \"supporting_evidence_ids\": [\"e002\", \"e003\", \"e007\", \"e008\"]}"
+                }
+              }
+            ]
+          },
+          "finish_reason": "tool_calls"
+        }
+      ]
+    }
+  ]
+}

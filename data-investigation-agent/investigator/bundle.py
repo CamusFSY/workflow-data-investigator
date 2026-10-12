@@ -8,6 +8,8 @@ import sqlite3
 import stat
 from pathlib import Path
 
+from .provenance import require_synthetic, source_provenance
+
 MAX_FILE = 4 * 1024 * 1024
 MAX_TOTAL = 8 * 1024 * 1024
 MAX_ROWS = 50000
@@ -18,6 +20,11 @@ CONTEXT_FILES = {
     "request": "request.txt",
 }
 IDENT = re.compile(r"[A-Za-z][A-Za-z0-9_]{0,62}\Z")
+CSV_NULL_ENCODINGS = {
+    "empty": ("", "Empty CSV cells become NULL; unspecified column types are TEXT."),
+    "backslash-N": (r"\N", "CSV literal backslash-N becomes NULL; empty TEXT stays empty; "
+                    "empty numeric fields are invalid; unspecified column types are TEXT."),
+}
 
 
 def digest(data):
@@ -60,46 +67,28 @@ def table_specs(catalog):
         yield name, filename, entry.get("columns", [])
 
 
-def require_synthetic(catalog):
-    """Accept explicit legacy or provenance declarations without rewriting the catalog."""
-    if not isinstance(catalog, dict):
-        raise ValueError("Catalog must be an object")
-    if "synthetic" in catalog and catalog["synthetic"] is not True:
-        raise ValueError("catalog.synthetic, when present, must be boolean true")
-    provenance = catalog.get("provenance", {})
-    if not isinstance(provenance, dict):
-        raise ValueError("catalog.provenance must be an object")
-    if "type" in provenance and provenance["type"] != "synthetic":
-        raise ValueError("Provenance conflicts with a synthetic-only bundle")
-    for key in ("real_enterprise_data", "personal_data"):
-        if key in provenance and provenance[key] is not False:
-            raise ValueError(f"provenance.{key}, when present, must be boolean false")
-    explicit_provenance = (
-        provenance.get("type") == "synthetic"
-        and provenance.get("real_enterprise_data") is False
-        and provenance.get("personal_data") is False
-    )
-    if catalog.get("synthetic") is not True and not explicit_provenance:
-        raise ValueError(
-            "MVP requires synthetic: true or explicit synthetic provenance "
-            "with real_enterprise_data: false and personal_data: false"
-        )
-
-
 def prepare_bundle(source, output):
     """No globbing, SQL execution from files, code imports, or unknown file reads."""
     source = Path(source).absolute()
     for parent in [source, *source.parents]:
         if parent.is_symlink():
             raise ValueError("Symlink bundle paths are not accepted")
-    files = {name: safe_read(source, name, 65536) for name in CONTEXT_FILES.values()}
+    files = {"catalog.json": safe_read(source, "catalog.json", 65536)}
     catalog = json.loads(files["catalog.json"])
-    require_synthetic(catalog)
+    source_provenance(catalog)
+    null_encoding = catalog.get("csv_null_encoding", "empty")
+    if not isinstance(null_encoding, str) or null_encoding not in CSV_NULL_ENCODINGS:
+        raise ValueError("catalog.csv_null_encoding must be empty or backslash-N")
+    null_token, import_note = CSV_NULL_ENCODINGS[null_encoding]
+    for name in CONTEXT_FILES.values():
+        if name != "catalog.json":
+            files[name] = safe_read(source, name, 65536)
     specs = list(table_specs(catalog))
     for _, filename, _ in specs:
         files[filename] = safe_read(source, filename)
     if sum(map(len, files.values())) > MAX_TOTAL:
         raise ValueError("Bundle exceeds 8 MiB")
+    provenance = source_provenance(catalog, files)
     output = Path(output).absolute()
     for parent in [output.parent, *output.parent.parents]:
         if parent.is_symlink():
@@ -155,7 +144,7 @@ def prepare_bundle(source, output):
                     for column, value, kind in zip(header, row, types):
                         if len(value.encode("utf-8")) > 4096:
                             raise ValueError("CSV field exceeds 4096 bytes")
-                        if value == "":
+                        if value == null_token:
                             converted.append(None)
                         elif kind in {"INTEGER", "REAL"}:
                             import math
@@ -166,9 +155,10 @@ def prepare_bundle(source, output):
                                 if kind == "INTEGER" and not -(2 ** 63) <= val < 2 ** 63:
                                     raise ValueError("Integer exceeds SQLite range")
                             except ValueError:
+                                null_hint = "an empty cell" if null_encoding == "empty" else r"literal \N"
                                 raise ValueError(
                                     f"Invalid {kind} in {filename}, row {count + 1}, column {column}; "
-                                    "use a finite number in range or an empty cell for NULL"
+                                    f"use a finite number in range or {null_hint} for NULL"
                                 ) from None
                             converted.append(val)
                         else:
@@ -183,8 +173,8 @@ def prepare_bundle(source, output):
         hashes["data.sqlite"] = digest(db.read_bytes())
         for path in snapshot.iterdir():
             path.chmod(0o444)
-        return {"synthetic": True, "files": hashes, "sqlite_version": sqlite3.sqlite_version,
-                "import": "Empty CSV cells become NULL; unspecified column types are TEXT."}
+        return {"synthetic": provenance["type"] == "synthetic", "provenance": provenance, "files": hashes, "sqlite_version": sqlite3.sqlite_version,
+                "import": import_note}
     except Exception as exc:
         (output / "setup_error.txt").write_text(f"{type(exc).__name__}: {exc}\n")
         raise
@@ -204,7 +194,7 @@ def validate_bundle(source):
                            for row in conn.execute(f'PRAGMA table_info("{table}")')]
                 count = conn.execute(f'SELECT COUNT(*) FROM "{table}"').fetchone()[0]
                 tables.append({"name": table, "file": filename, "rows": count, "columns": columns})
-        return {"status": "valid", "synthetic": True, "provider_calls": 0, "tables": tables,
+        return {"status": "valid", "synthetic": manifest["synthetic"], "provenance": manifest["provenance"], "provider_calls": 0, "tables": tables,
                 "source_files": {k: v for k, v in manifest["files"].items() if k != "data.sqlite"},
                 "scope": "File, schema, type and resource validation only; metric meaning and authority are not verified.",
                 "import": manifest["import"]}

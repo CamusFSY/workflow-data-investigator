@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+- Add an optional caller-frozen answer shape through the Python API, configured
+  client and recorded CLI. Select one answer query separately from supporting
+  evidence; preserve rejected attempts and the frozen contract in reports,
+  notebooks and standalone replay. Shape acceptance does not prove numerical
+  correctness; default legacy citations remain compatible.
+- Add an offline preparation and explicit caller-admission recipe for one pinned
+  World Bank WDI development snapshot, preserving raw provenance and keeping
+  evaluation records outside model inputs. Expose the configured-client output
+  token limit without changing its default or caller-owned spending controls.
+- Prepare explicit public-real CSV provenance: source/license/attribution and
+  exact snapshot hashes must match a reviewed code-owned allowlist, initially
+  empty. Preserve data classification through reports, charts, notebooks and replay.
+- Add opt-in `thinking="disabled"` request construction and configured-client
+  `extra_body` mapping, without changing generic defaults, retries or accounting.
+  Thinking-enabled tool histories remain unsupported; checks are offline only.
 - Add a documentation index, reproducible synthetic output guide, architecture
   reference and repository badges for main CI, Apache-2.0, tested Python and alpha status.
 - Make installation and compatibility guidance self-contained in this repository.

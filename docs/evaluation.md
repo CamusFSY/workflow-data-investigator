@@ -40,6 +40,14 @@ inputs/results, not source authority or the truth of the final explanation.
 
 ## Future model evidence
 
+The optional [answer contract](../data-investigation-agent/docs/evidence-roles.md)
+is checked separately from numerical correctness. Fresh synthetic tests include
+a correct selected query with several supports, invalid or missing answer IDs,
+wrong columns/types/row counts, and a wrong numeric answer with a valid shape.
+The latter passes the interface and fails a separate CSV-derived test oracle.
+No measured benchmark answer is used to tune these tests. The offline CLI and
+configured-client double check exports and replay, not live model improvement.
+
 No end-to-end live model result is included in this distribution.
 When recording future evidence, retain successful and unsuccessful attempts and
 keep old outputs unchanged. A newly generated scripted report must not be

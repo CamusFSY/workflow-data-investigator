@@ -1,6 +1,9 @@
 """Reviewed, fixed statistical and SVG operations; no eval, exec, or model code."""
 import html
 import math
+import json
+
+from .provenance import data_label
 
 
 def counts(row, successes, total):
@@ -59,7 +62,7 @@ def analyze(rows, args):
     raise ValueError("Unsupported analysis operation")
 
 
-def bar_chart(rows, args):
+def bar_chart(rows, args, *, provenance=None):
     if not 1 <= len(rows) <= 12:
         raise ValueError("Chart requires 1..12 aggregate rows")
     points = []
@@ -67,16 +70,18 @@ def bar_chart(rows, args):
         good, total = counts(row, args["successes"], args["total"])
         points.append({"label": str(row[args["label"]]), "rate": good / total,
                        "successes": good, "non_successes": total - good, "total": total})
+    label = data_label(provenance)
     binding = f"successes: {args['successes']} / total: {args['total']}"
     visible_binding = binding if len(binding) <= 80 else binding[:77] + "..."
     height = 107 + len(points) * 56
     chunks = [
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 {height}" '
-        'role="img" aria-label="Observed untyped ratios from query columns, synthetic data">',
+        f'role="img" aria-label="Observed untyped ratios from query columns, {label}">',
+        '<metadata>' + html.escape(json.dumps(provenance or {"type": "synthetic"}, ensure_ascii=False)) + '</metadata>',
         f'<desc>{html.escape(binding)}. Metric meaning and business approval are unverified.</desc>',
         f'<rect width="700" height="{height}" rx="12" fill="#f3f6fb"/>',
         '<text x="22" y="30" fill="#17304d" font-family="sans-serif" font-size="17">'
-        'Observed ratio · UNTYPED · SYNTHETIC DATA</text>',
+        f'Observed ratio · UNTYPED · {label}</text>',
         f'<text x="22" y="52" fill="#17304d" font-family="sans-serif" font-size="12">'
         f'<title>{html.escape(binding)}</title>{html.escape(visible_binding)}</text>',
     ]

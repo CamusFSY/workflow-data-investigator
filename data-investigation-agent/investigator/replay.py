@@ -4,12 +4,16 @@ from pathlib import Path
 
 from .bundle import digest, safe_read
 from .runtime import Runtime
+from .provenance import verify_frozen_provenance, data_label
+from .evidence import freeze_answer_contract, contract_digest
 
 
 class Replay:
     def __init__(self, root):
         self.root = Path(root).absolute()
-        manifest = json.loads(safe_read(self.root, "manifest.json", 65536))
+        # A valid 64 KiB catalog can also carry synthetic provenance metadata;
+        # leave bounded room for that metadata plus input/runtime/artifact hashes.
+        manifest = json.loads(safe_read(self.root, "manifest.json", 131072))
         if not isinstance(manifest, dict) or not isinstance(manifest.get("input"), dict):
             raise ValueError("Invalid manifest: expected an object with an input object")
         for label, mapping in (("input.files", manifest["input"].get("files")),
@@ -36,7 +40,28 @@ class Replay:
                 raise ValueError(f"Artifact hash mismatch: {name}")
         lines = (self.root / "trace.jsonl").read_text().splitlines()
         self.events = {event["evidence_id"]: event for event in map(json.loads, lines)}
-        self.runtime = Runtime(self.root / "input")
+        source_files = {name: safe_read(self.root / "input", name)
+                        for name in manifest["input"]["files"] if name != "data.sqlite"}
+        self.provenance = verify_frozen_provenance(manifest["input"], source_files)
+        contract = None
+        reference = manifest.get("answer_contract")
+        report = json.loads(safe_read(self.root, "report.json", 8 * 1024**2))
+        if not isinstance(report, dict):
+            raise ValueError("Invalid report: expected an object")
+        if reference is not None:
+            if (not isinstance(reference, dict) or set(reference) != {"file", "sha256"}
+                    or reference["file"] != "answer_contract.json"
+                    or manifest["artifacts"].get(reference["file"]) != reference["sha256"]):
+                raise ValueError("Caller answer contract binding is invalid")
+            contract = freeze_answer_contract(json.loads(safe_read(self.root, reference["file"], 65536)))
+            if (contract is None or report.get("evidence_interface") != "answer_roles_v1"
+                    or report.get("answer_contract") != contract
+                    or report.get("answer_contract_sha256") != contract_digest(contract)):
+                raise ValueError("Report and frozen caller answer contract differ")
+        elif ("answer_contract.json" in manifest["artifacts"]
+              or any(key in report for key in ("evidence_interface", "answer_contract", "answer_contract_sha256"))):
+            raise ValueError("Caller answer contract cannot silently become legacy mode")
+        self.runtime = Runtime(self.root / "input", provenance=self.provenance, answer_contract=contract)
 
     def check(self, event):
         if event != self.events.get(event["evidence_id"]):
@@ -68,6 +93,16 @@ def verify(root):
             count += 1
     print(f"OFFLINE REPLAY VERIFIED: {count} tool results, "
           "including recorded SQL errors; 0 API calls.")
+    print(data_label(replay.provenance) + "; frozen provenance and file hashes checked; "
+          "source/license/privacy approval is not re-verified. Free prose is not scored.")
+    if replay.runtime.answer_contract is not None:
+        answer = replay.runtime.finished or {}
+        print("CALLER-FROZEN ANSWER ROLES: " + json.dumps({
+            "answer_evidence_id": answer.get("answer_evidence_id"),
+            "supporting_evidence_ids": answer.get("supporting_evidence_ids", []),
+            "answer_contract_sha256": contract_digest(replay.runtime.answer_contract),
+        }, sort_keys=True))
+        print("Role/source/type/shape checks replayed; numerical correctness and support relevance are not scored.")
     if clarifications:
         print(f"{clarifications} trusted caller clarification events replayed; "
               "source authority is not re-verified.")

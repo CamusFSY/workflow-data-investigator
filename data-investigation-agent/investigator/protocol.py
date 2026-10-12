@@ -67,6 +67,9 @@ def provider_observation(provider):
     model = value.get("requested_model")
     if isinstance(model, str) and MODEL_ID.fullmatch(model):
         result["requested_model"] = model
+    thinking = value.get("thinking_requested")
+    if isinstance(thinking, str) and thinking == "disabled":
+        result["thinking_requested"] = thinking
     reason = value.get("rejection_reason")
     if isinstance(reason, str) and reason in {
             "budget_rejected", "not_authorized", "transport_failed", "recording_exhausted"}:

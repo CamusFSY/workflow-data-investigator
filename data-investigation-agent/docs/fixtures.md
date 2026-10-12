@@ -1,5 +1,9 @@
 # Your own synthetic CSV bundle
 
+Explicitly reviewed public-real snapshots use the same CSV layout with a
+different, fail-closed [provenance contract](public-data.md). The public registry
+is currently empty. Do not change a real dataset's label to pass synthetic checks.
+
 A bundle is a directory containing `catalog.json`, `metric_definition.md`,
 `dashboard_query.sql`, `request.txt` and the CSV files explicitly named in the
 catalog. The importer does not scan for extra data or evaluator answers. CSV
@@ -30,9 +34,20 @@ executed during validation.
 The existing importer limits still apply: up to 20 tables, 32 columns per table,
 50,000 data rows per CSV, 4 MiB per CSV, 8 MiB total declared inputs and a 16 MiB
 imported database. The four context documents are each limited to 64 KiB. Paths
-must be flat declared filenames; linked/non-regular files are rejected. Empty
-CSV cells become NULL; unspecified types default to TEXT. Declared INTEGER
+must be flat declared filenames; linked/non-regular files are rejected. By default,
+empty CSV cells become NULL; unspecified types default to TEXT. Declared INTEGER
 values must fit SQLite's signed 64-bit range and REAL values must be finite.
+
+For an explicitly typed source that distinguishes NULL from empty TEXT, the
+catalog may set `"csv_null_encoding": "backslash-N"`. In that opt-in mode only
+the exact two-character field `\N` becomes NULL, including a quoted `"\N"`
+field; an empty TEXT field remains the empty string. Empty INTEGER/REAL fields
+are invalid: write `\N` for their missing values. The marker is reserved and
+cannot also represent a literal two-character TEXT value; the source preparation
+must check for marker collisions. No trimming or automatic repair is performed.
+Omitting the option, or explicitly setting `"empty"`, retains the original
+empty-cell-to-NULL behavior. Unknown encodings are rejected before output.
+The copied catalog and returned `import` note retain the selected semantics.
 
 Inspect the actual catalog and schema without selecting a provider:
 

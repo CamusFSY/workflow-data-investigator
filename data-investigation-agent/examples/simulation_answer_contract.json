@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "columns": [
+    {
+      "name": "period_key",
+      "type": "string",
+      "nullable": false
+    },
+    {
+      "name": "passed_runs",
+      "type": "integer",
+      "nullable": false
+    },
+    {
+      "name": "eligible_runs",
+      "type": "integer",
+      "nullable": false
+    }
+  ],
+  "min_rows": 2,
+  "max_rows": 2
+}
