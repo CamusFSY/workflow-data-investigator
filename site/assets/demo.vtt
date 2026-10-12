@@ -1,0 +1,28 @@
+WEBVTT
+
+00:00:00.012 --> 00:00:07.240
+Run real tools with a frozen answer contract. The provider responses are hand-authored; no model is called.
+
+00:00:07.240 --> 00:00:17.730
+The CLI retains the bad-column error, inspects schema, then executes the fixed correction.
+
+00:00:17.730 --> 00:00:25.880
+The actual report records nine tool actions, one visible error, and zero live request attempts.
+
+00:00:25.880 --> 00:00:34.038
+e004 really failed: ‘no such column: reporting_week’. The rejected query and its return stay visible.
+
+00:00:34.038 --> 00:00:42.220
+e005 exposes period_key, the available column. This example's next action is fixed, not a fresh model choice.
+
+00:00:42.220 --> 00:00:52.351
+e006 uses period_key and excludes cancelled runs. Actual counts: before 5/6; after 3/6.
+
+00:00:52.351 --> 00:01:01.424
+The report selects e006 as the answer and e002, e003, e007, e008 as support. The caller's contract is retained.
+
+00:01:01.424 --> 00:01:09.541
+The generated chart shows 83.3% to 50.0%. This descriptive change does not establish cause or validate prose.
+
+00:01:09.541 --> 00:01:22.029
+Replay verifies all nine recorded tool results, including the SQL error, without API calls. Free prose is not scored.

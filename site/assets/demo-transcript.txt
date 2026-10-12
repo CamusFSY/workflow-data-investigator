@@ -1,0 +1,83 @@
+Workflow Data Investigator — actual offline software capture
+
+OFFLINE RECORDED RESPONSES. Original synthetic data. Hand-authored choices.
+The CLI, SQL, generated report and replay in this video are actual execution.
+Silent capture with captions; reading pauses and report navigation are scripted.
+
+00:00:00.012  01 / Run the included example
+Run real tools with a frozen answer contract. The provider responses are hand-authored; no model is called.
+
+00:00:07.240  02 / Keep the actual feedback
+The CLI retains the bad-column error, inspects schema, then executes the fixed correction.
+
+00:00:17.730  03 / Open the generated report
+The actual report records nine tool actions, one visible error, and zero live request attempts.
+
+00:00:25.880  04 / Inspect the retained error
+e004 really failed: ‘no such column: reporting_week’. The rejected query and its return stay visible.
+
+00:00:34.038  05 / Inspect the schema
+e005 exposes period_key, the available column. This example's next action is fixed, not a fresh model choice.
+
+00:00:42.220  06 / Inspect the corrected answer query
+e006 uses period_key and excludes cancelled runs. Actual counts: before 5/6; after 3/6.
+
+00:00:52.351  07 / Separate answer from supporting evidence
+The report selects e006 as the answer and e002, e003, e007, e008 as support. The caller's contract is retained.
+
+00:01:01.424  08 / Check the arithmetic's scope
+The generated chart shows 83.3% to 50.0%. This descriptive change does not establish cause or validate prose.
+
+00:01:09.541  09 / Replay the exported evidence
+Replay verifies all nine recorded tool results, including the SQL error, without API calls. Free prose is not scored.
+
+ACTUAL COMMAND OUTPUT (not fabricated or summarized)
+
+$ python -B -m investigator investigate \
+    --bundle examples/simulation_bundle \
+    --responses examples/simulation_role_responses.json \
+    --answer-contract examples/simulation_answer_contract.json \
+    --out ../runs/showcase-video-v2/run
+=== OFFLINE RECORDED RESPONSES · DATA CLASSIFICATION PENDING VALIDATION · 0 API CALLS ===
+Fixed supplied responses exercise real tools; no new model decisions.
+目标：Compare simulation pass rates between before and after, check the denominator, and return replayable evidence.
+
+[e001] read_context OK — Read the supplied metric and inspect the custom simulation schema.
+
+[e002] read_context OK — Read the supplied metric and inspect the custom simulation schema.
+
+[e003] inspect_schema OK — Read the supplied metric and inspect the custom simulation schema.
+
+[e004] query ERROR — Deliberately exercise an incorrect column; this fixed example is not a model decision.
+{"type": "OperationalError", "message": "no such column: reporting_week"}
+
+[e005] inspect_schema OK — Retain the error and inspect the available columns.
+
+[e006] query OK — Use period_key and the supplied eligibility definition.
+{"columns": ["period_key", "passed_runs", "eligible_runs"], "rows": [{"period_key": "after", "passed_runs": 3, "eligible_runs": 6}, {"period_key": "before", "passed_runs": 5, "eligible_runs": 6}], "row_count": 2, "truncated": false}
+
+[e007] analyze OK — Compute rates from the actual SQL results.
+{"baseline": {"period": "before", "successes": 5, "total": 6, "rate": 0.8333333333333334, "non_successes": 1}, "current": {"period": "after", "successes": 3, "total": 6, "rate": 0.5, "non_successes": 3}, "delta_percentage_points": -33.333333333333336, "non_success_count_change": 2, "scope": "Descriptive arithmetic on selected columns only. non_successes = total - successes; this complement is not necessarily late. Metric meaning, business approval, causality and statistical significance are not verified.", "rate_semantics": "untyped_ratio", "source_columns": {"successes": "passed_runs", "total": "eligible_runs", "period": "period_key"}, "source_evidence_id": "e006"}
+
+[e008] plot OK — Plot the observed counts, with their source-column bindings.
+
+[e009] finish OK — Finish the fixed offline protocol example; numeric results are in the cited evidence.
+
+SYNTHETIC DATA
+状态：answered
+The SQL and rate comparison record the observed pass rates for this synthetic example. This fixed narration is not a new model judgment.
+答案证据：e006
+支持证据：e002, e003, e007, e008
+来源、类型、形状已校验；数值正确性与支持相关性需另行核对。
+证据交付物：../runs/showcase-video-v2/run/report.html · investigation.ipynb · trace.jsonl
+复跑：python ../runs/showcase-video-v2/run/replay.py
+
+Exit code: 0
+
+$ python -B ../runs/showcase-video-v2/run/replay.py
+OFFLINE REPLAY VERIFIED: 9 tool results, including recorded SQL errors; 0 API calls.
+SYNTHETIC DATA; frozen provenance and file hashes checked; source/license/privacy approval is not re-verified. Free prose is not scored.
+CALLER-FROZEN ANSWER ROLES: {"answer_contract_sha256": "18c9800f10220d48a5313a7947446af1811d586500f9a7390c1240938d6bf46e", "answer_evidence_id": "e006", "supporting_evidence_ids": ["e002", "e003", "e007", "e008"]}
+Role/source/type/shape checks replayed; numerical correctness and support relevance are not scored.
+
+Exit code: 0
