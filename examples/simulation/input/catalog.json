@@ -1,0 +1,30 @@
+{
+  "version": "1.0",
+  "synthetic": true,
+  "description": "Original hand-created simulation test data; no employer, patient or production records.",
+  "tables": [
+    {
+      "name": "simulation_runs",
+      "file": "simulation_runs.csv",
+      "grain": "One row per simulation run, identified by run_id",
+      "columns": [
+        {
+          "name": "run_id",
+          "type": "TEXT"
+        },
+        {
+          "name": "period_key",
+          "type": "TEXT"
+        },
+        {
+          "name": "variant",
+          "type": "TEXT"
+        },
+        {
+          "name": "outcome",
+          "type": "TEXT"
+        }
+      ]
+    }
+  ]
+}

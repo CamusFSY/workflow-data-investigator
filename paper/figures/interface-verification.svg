@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="311.22pt" height="141.8112pt" viewBox="0 0 311.22 141.8112" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-10-12T10:15:10.456809</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.8, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 141.8112
+L 311.22 141.8112
+L 311.22 0
+L 0 0
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 3.0807 53.581709
+L 62.9262 53.581709
+L 62.9262 19.208909
+L 3.0807 19.208909
+z
+" clip-path="url(#pc443b84060)" style="fill: #ffffff; stroke: #255f85; stroke-width: 0.9; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 83.1816 53.581709
+L 148.8582 53.581709
+L 148.8582 19.208909
+L 83.1816 19.208909
+z
+" clip-path="url(#pc443b84060)" style="fill: #ffffff; stroke: #255f85; stroke-width: 0.9; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 169.1136 53.581709
+L 231.4143 53.581709
+L 231.4143 19.208909
+L 169.1136 19.208909
+z
+" clip-path="url(#pc443b84060)" style="fill: #ffffff; stroke: #255f85; stroke-width: 0.9; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 251.6697 53.581709
+L 308.1393 53.581709
+L 308.1393 19.208909
+L 251.6697 19.208909
+z
+" clip-path="url(#pc443b84060)" style="fill: #ffffff; stroke: #255f85; stroke-width: 0.9; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 64.928992 36.257818
+Q 73.054879 36.257818 80.174534 36.257818
+" clip-path="url(#pc443b84060)" style="fill: none; stroke: #6b7785; stroke-width: 0.9; stroke-linecap: round"/>
+    <path d="M 76.574534 34.457818
+L 80.174534 36.257818
+L 76.574534 38.057818
+z
+" clip-path="url(#pc443b84060)" style="fill: #6b7785; stroke: #6b7785; stroke-width: 0.9; stroke-linecap: round"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 150.860992 36.257818
+Q 158.986879 36.257818 166.106534 36.257818
+" clip-path="url(#pc443b84060)" style="fill: none; stroke: #6b7785; stroke-width: 0.9; stroke-linecap: round"/>
+    <path d="M 162.506534 34.457818
+L 166.106534 36.257818
+L 162.506534 38.057818
+z
+" clip-path="url(#pc443b84060)" style="fill: #6b7785; stroke: #6b7785; stroke-width: 0.9; stroke-linecap: round"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 233.417092 36.257818
+Q 241.542979 36.257818 248.662634 36.257818
+" clip-path="url(#pc443b84060)" style="fill: none; stroke: #6b7785; stroke-width: 0.9; stroke-linecap: round"/>
+    <path d="M 245.062634 34.457818
+L 248.662634 36.257818
+L 245.062634 38.057818
+z
+" clip-path="url(#pc443b84060)" style="fill: #6b7785; stroke: #6b7785; stroke-width: 0.9; stroke-linecap: round"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 199.088789 55.561404
+Q 158.524857 83.635488 118.788313 56.133096
+" clip-path="url(#pc443b84060)" style="fill: none; stroke: #b86c27; stroke-width: 0.9; stroke-linecap: round"/>
+    <path d="M 120.724079 59.66195
+L 118.788313 56.133096
+L 122.772856 56.701796
+z
+" clip-path="url(#pc443b84060)" style="fill: #b86c27; stroke: #b86c27; stroke-width: 0.9; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 2.16 87.679526
+L 309.06 87.679526
+" clip-path="url(#pc443b84060)" style="fill: none; stroke: #ccd3da; stroke-width: 0.6; stroke-linecap: square"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 8px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #18212c" x="33.00345" y="31.728249" transform="rotate(-0 33.00345 31.728249)">Caller</text>
+   </g>
+   <g id="text_2">
+    <text style="font-size: 7.5px; font-family: 'DejaVu Sans'; fill: #18212c" transform="translate(16.802278 40.570338)">question</text>
+    <text style="font-size: 7.5px; font-family: 'DejaVu Sans'; fill: #18212c" transform="translate(7.084505 50.108463)">fixed contract</text>
+   </g>
+   <g id="text_3">
+    <text style="font-weight: 700; font-size: 8px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #18212c" x="116.0199" y="31.696999" transform="rotate(-0 116.0199 31.696999)">Agent / tools</text>
+   </g>
+   <g id="text_4">
+    <text style="font-size: 7.5px; font-family: 'DejaVu Sans'; fill: #18212c" transform="translate(105.194119 40.570338)">query</text>
+    <text style="font-size: 7.5px; font-family: 'DejaVu Sans'; fill: #18212c" transform="translate(102.427908 50.108463)">inspect</text>
+   </g>
+   <g id="text_5">
+    <text style="font-weight: 700; font-size: 8px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #18212c" x="200.26395" y="31.696999" transform="rotate(-0 200.26395 31.696999)">Finish gate</text>
+   </g>
+   <g id="text_6">
+    <text style="font-size: 7.5px; font-family: 'DejaVu Sans'; fill: #18212c" transform="translate(185.587973 40.570338)">primary</text>
+    <text style="font-size: 7.5px; font-family: 'DejaVu Sans'; fill: #18212c" transform="translate(185.866294 50.108463)">support</text>
+   </g>
+   <g id="text_7">
+    <text style="font-weight: 700; font-size: 8px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #18212c" x="279.9045" y="31.728249" transform="rotate(-0 279.9045 31.728249)">Accepted</text>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 7.5px; font-family: 'DejaVu Sans'; fill: #18212c" transform="translate(270.922664 40.570338)">valid</text>
+    <text style="font-size: 7.5px; font-family: 'DejaVu Sans'; fill: #18212c" transform="translate(266.402742 50.108463)">artifact</text>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 7px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #18212c" x="158.9859" y="14.534208" transform="rotate(-0 158.9859 14.534208)">submit</text>
+   </g>
+   <g id="text_10">
+    <text style="font-size: 7.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #b86c27" x="157.1445" y="76.130266" transform="rotate(-0 157.1445 76.130266)">rejection → repair within original budget</text>
+   </g>
+   <g id="text_11">
+    <text style="font-weight: 700; font-size: 8px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #18212c" x="2.16" y="94.554086" transform="rotate(-0 2.16 94.554086)">Independent evaluation</text>
+   </g>
+   <g id="text_12">
+    <text style="font-weight: 700; font-size: 8px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #255f85" x="4.6152" y="111.602995" transform="rotate(-0 4.6152 111.602995)">Structure S</text>
+   </g>
+   <g id="text_13">
+    <text style="font-size: 7.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #18212c" x="4.6152" y="124.527168" transform="rotate(-0 4.6152 124.527168)">artifact contract</text>
+   </g>
+   <g id="text_14">
+    <text style="font-weight: 700; font-size: 8px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #255f85" x="109.8819" y="111.602995" transform="rotate(-0 109.8819 111.602995)">Numerical result N</text>
+   </g>
+   <g id="text_15">
+    <text style="font-size: 7.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #18212c" x="109.8819" y="124.527168" transform="rotate(-0 109.8819 124.527168)">reference answer</text>
+   </g>
+   <g id="text_16">
+    <text style="font-weight: 700; font-size: 8px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #255f85" x="215.1486" y="111.602995" transform="rotate(-0 215.1486 111.602995)">Grounding G</text>
+   </g>
+   <g id="text_17">
+    <text style="font-size: 7.5px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #18212c" x="215.1486" y="124.527168" transform="rotate(-0 215.1486 124.527168)">claim-level support</text>
+   </g>
+   <g id="text_18">
+    <text style="font-style: italic; font-size: 7.6px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #18212c" x="2.16" y="137.726323" transform="rotate(-0 2.16 137.726323)">Acceptance alone does not certify numerical truth or narrative grounding.</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pc443b84060">
+   <rect x="2.16" y="2.16" width="306.9" height="137.4912"/>
+  </clipPath>
+ </defs>
+</svg>

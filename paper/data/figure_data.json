@@ -1,0 +1,600 @@
+{
+  "date": "2026-10-12",
+  "evaluated_commit": "a18a07061ea7b9a3e1950b4527e36e266d17b487",
+  "note": "Source-backed descriptive observations. Prospective comparison has three families, one trial per mode per family; remaining panels are diagnostic or exposed development material. No confidence intervals or population estimates.",
+  "results": {
+    "primary_three_families": {
+      "legacy": {
+        "trials": 3,
+        "N_pass": 2,
+        "N_incorrect": 0,
+        "N_unverifiable": 1,
+        "Q_pass": 3,
+        "F_pass": 3,
+        "S_pass": 2,
+        "reports_with_U": 0,
+        "U_count": 0,
+        "U_denominator": 20,
+        "overall_success": 2,
+        "requests": 11,
+        "cost_cny": 0.079332
+      },
+      "roles": {
+        "trials": 3,
+        "N_pass": 3,
+        "N_incorrect": 0,
+        "N_unverifiable": 0,
+        "Q_pass": 3,
+        "F_pass": 3,
+        "S_pass": 3,
+        "reports_with_U": 0,
+        "U_count": 0,
+        "U_denominator": 15,
+        "overall_success": 3,
+        "requests": 14,
+        "cost_cny": 0.102346
+      }
+    },
+    "related_sign_diagnostic": {
+      "legacy": {
+        "trials": 1,
+        "N_pass": 1,
+        "N_incorrect": 0,
+        "N_unverifiable": 0,
+        "Q_pass": 1,
+        "F_pass": 1,
+        "S_pass": 1,
+        "reports_with_U": 0,
+        "U_count": 0,
+        "U_denominator": 12,
+        "overall_success": 1,
+        "requests": 4,
+        "cost_cny": 0.030024
+      },
+      "roles": {
+        "trials": 1,
+        "N_pass": 1,
+        "N_incorrect": 0,
+        "N_unverifiable": 0,
+        "Q_pass": 1,
+        "F_pass": 1,
+        "S_pass": 1,
+        "reports_with_U": 0,
+        "U_count": 0,
+        "U_denominator": 8,
+        "overall_success": 1,
+        "requests": 5,
+        "cost_cny": 0.04119
+      }
+    },
+    "exposed_regression": {
+      "trials": 4,
+      "N_pass": 4,
+      "N_incorrect": 0,
+      "N_unverifiable": 0,
+      "Q_pass": 4,
+      "F_pass": 4,
+      "S_pass": 4,
+      "reports_with_U": 1,
+      "U_count": 1,
+      "U_denominator": 54,
+      "overall_success": 3,
+      "requests": 15,
+      "cost_cny": 0.100844
+    },
+    "exposed_smoke": {
+      "trials": 1,
+      "N_pass": 1,
+      "N_incorrect": 0,
+      "N_unverifiable": 0,
+      "Q_pass": 1,
+      "F_pass": 1,
+      "S_pass": 1,
+      "reports_with_U": 0,
+      "U_count": 0,
+      "U_denominator": 5,
+      "overall_success": 1,
+      "requests": 4,
+      "cost_cny": 0.022284
+    },
+    "all_declared_units_descriptive_only": {
+      "trials": 13,
+      "N_pass": 12,
+      "N_incorrect": 0,
+      "N_unverifiable": 1,
+      "Q_pass": 13,
+      "F_pass": 13,
+      "S_pass": 12,
+      "reports_with_U": 1,
+      "U_count": 1,
+      "U_denominator": 114,
+      "overall_success": 11,
+      "requests": 53,
+      "cost_cny": 0.37602
+    }
+  },
+  "paired_primary_results": {
+    "roles_wins": 1,
+    "legacy_wins": 0,
+    "ties": 2,
+    "interpretation": "One observed structural-compliance gain. Both arms supplied correct substantive answers to all three questions; no arithmetic-accuracy improvement is demonstrated."
+  },
+  "verification": {
+    "units": 13,
+    "evidence_objects_hash_verified": 62,
+    "contracts_hash_verified": 6,
+    "missing_cited_references": 0,
+    "finish_attempts_retained": 17,
+    "rejected_attempts_retained": 4,
+    "distinct_query_results_independently_replayed": 29,
+    "query_replay_passes": 29,
+    "all_selected_primary_reference_matches": 12,
+    "source_database_and_projection_verified": true,
+    "case_order_and_mode_assignments_verified": true,
+    "no_new_provider_calls_for_review": true
+  },
+  "units": [
+    {
+      "unit_id": "q764-roles",
+      "order": 1,
+      "qid": 764,
+      "arm": "roles",
+      "category": "smoke",
+      "N": true,
+      "Q": true,
+      "F": true,
+      "S": "pass",
+      "G_reference_integrity": true,
+      "G_query_replay": true,
+      "G_narrative": true,
+      "U_count": 0,
+      "U_denominator": 5,
+      "overall_success": true,
+      "request_count": 4,
+      "input_tokens": 8826,
+      "output_tokens": 579,
+      "cost_cny": 0.022284,
+      "finish_attempts": 2,
+      "rejected_finish_attempts": 1,
+      "observed_primary_rows": [
+        [
+          "Agility"
+        ],
+        [
+          "Stamina"
+        ],
+        [
+          "Super Speed"
+        ],
+        [
+          "Super Strength"
+        ]
+      ]
+    },
+    {
+      "unit_id": "q744-legacy",
+      "order": 2,
+      "qid": 744,
+      "arm": "legacy",
+      "category": "prospective",
+      "N": true,
+      "Q": true,
+      "F": true,
+      "S": "pass",
+      "G_reference_integrity": true,
+      "G_query_replay": true,
+      "G_narrative": true,
+      "U_count": 0,
+      "U_denominator": 8,
+      "overall_success": true,
+      "request_count": 4,
+      "input_tokens": 12160,
+      "output_tokens": 633,
+      "cost_cny": 0.029384,
+      "finish_attempts": 1,
+      "rejected_finish_attempts": 0,
+      "observed_primary_rows": [
+        [
+          163
+        ]
+      ]
+    },
+    {
+      "unit_id": "q744-roles",
+      "order": 3,
+      "qid": 744,
+      "arm": "roles",
+      "category": "prospective",
+      "N": true,
+      "Q": true,
+      "F": true,
+      "S": "pass",
+      "G_reference_integrity": true,
+      "G_query_replay": true,
+      "G_narrative": true,
+      "U_count": 0,
+      "U_denominator": 4,
+      "overall_success": true,
+      "request_count": 5,
+      "input_tokens": 16833,
+      "output_tokens": 821,
+      "cost_cny": 0.040234,
+      "finish_attempts": 2,
+      "rejected_finish_attempts": 1,
+      "observed_primary_rows": [
+        [
+          163
+        ]
+      ]
+    },
+    {
+      "unit_id": "q745-roles",
+      "order": 4,
+      "qid": 745,
+      "arm": "roles",
+      "category": "prospective",
+      "N": true,
+      "Q": true,
+      "F": true,
+      "S": "pass",
+      "G_reference_integrity": true,
+      "G_query_replay": true,
+      "G_narrative": true,
+      "U_count": 0,
+      "U_denominator": 2,
+      "overall_success": true,
+      "request_count": 5,
+      "input_tokens": 11233,
+      "output_tokens": 540,
+      "cost_cny": 0.026786,
+      "finish_attempts": 2,
+      "rejected_finish_attempts": 1,
+      "observed_primary_rows": [
+        [
+          20
+        ]
+      ]
+    },
+    {
+      "unit_id": "q745-legacy",
+      "order": 5,
+      "qid": 745,
+      "arm": "legacy",
+      "category": "prospective",
+      "N": "unverifiable",
+      "Q": true,
+      "F": true,
+      "S": "unverifiable",
+      "G_reference_integrity": true,
+      "G_query_replay": true,
+      "G_narrative": true,
+      "U_count": 0,
+      "U_denominator": 3,
+      "overall_success": false,
+      "request_count": 3,
+      "input_tokens": 7488,
+      "output_tokens": 315,
+      "cost_cny": 0.017496,
+      "finish_attempts": 1,
+      "rejected_finish_attempts": 0,
+      "observed_primary_rows": null
+    },
+    {
+      "unit_id": "q800-legacy",
+      "order": 6,
+      "qid": 800,
+      "arm": "legacy",
+      "category": "prospective",
+      "N": true,
+      "Q": true,
+      "F": true,
+      "S": "pass",
+      "G_reference_integrity": true,
+      "G_query_replay": true,
+      "G_narrative": true,
+      "U_count": 0,
+      "U_denominator": 9,
+      "overall_success": true,
+      "request_count": 4,
+      "input_tokens": 13486,
+      "output_tokens": 685,
+      "cost_cny": 0.032452,
+      "finish_attempts": 1,
+      "rejected_finish_attempts": 0,
+      "observed_primary_rows": [
+        [
+          31.2
+        ]
+      ]
+    },
+    {
+      "unit_id": "q800-roles",
+      "order": 7,
+      "qid": 800,
+      "arm": "roles",
+      "category": "prospective",
+      "N": true,
+      "Q": true,
+      "F": true,
+      "S": "pass",
+      "G_reference_integrity": true,
+      "G_query_replay": true,
+      "G_narrative": true,
+      "U_count": 0,
+      "U_denominator": 9,
+      "overall_success": true,
+      "request_count": 4,
+      "input_tokens": 14723,
+      "output_tokens": 735,
+      "cost_cny": 0.035326,
+      "finish_attempts": 1,
+      "rejected_finish_attempts": 0,
+      "observed_primary_rows": [
+        [
+          31.2
+        ]
+      ]
+    },
+    {
+      "unit_id": "q829-roles",
+      "order": 8,
+      "qid": 829,
+      "arm": "roles",
+      "category": "diagnostic",
+      "N": true,
+      "Q": true,
+      "F": true,
+      "S": "pass",
+      "G_reference_integrity": true,
+      "G_query_replay": true,
+      "G_narrative": true,
+      "U_count": 0,
+      "U_denominator": 8,
+      "overall_success": true,
+      "request_count": 5,
+      "input_tokens": 16943,
+      "output_tokens": 913,
+      "cost_cny": 0.04119,
+      "finish_attempts": 2,
+      "rejected_finish_attempts": 1,
+      "observed_primary_rows": [
+        [
+          -163
+        ]
+      ]
+    },
+    {
+      "unit_id": "q829-legacy",
+      "order": 9,
+      "qid": 829,
+      "arm": "legacy",
+      "category": "diagnostic",
+      "N": true,
+      "Q": true,
+      "F": true,
+      "S": "pass",
+      "G_reference_integrity": true,
+      "G_query_replay": true,
+      "G_narrative": true,
+      "U_count": 0,
+      "U_denominator": 12,
+      "overall_success": true,
+      "request_count": 4,
+      "input_tokens": 12240,
+      "output_tokens": 693,
+      "cost_cny": 0.030024,
+      "finish_attempts": 1,
+      "rejected_finish_attempts": 0,
+      "observed_primary_rows": [
+        [
+          -163
+        ]
+      ]
+    },
+    {
+      "unit_id": "q723-roles",
+      "order": 10,
+      "qid": 723,
+      "arm": "roles",
+      "category": "regression",
+      "N": true,
+      "Q": true,
+      "F": true,
+      "S": "pass",
+      "G_reference_integrity": true,
+      "G_query_replay": true,
+      "G_narrative": true,
+      "U_count": 0,
+      "U_denominator": 3,
+      "overall_success": true,
+      "request_count": 4,
+      "input_tokens": 9869,
+      "output_tokens": 667,
+      "cost_cny": 0.025074,
+      "finish_attempts": 1,
+      "rejected_finish_attempts": 0,
+      "observed_primary_rows": [
+        [
+          83
+        ]
+      ]
+    },
+    {
+      "unit_id": "q728-roles",
+      "order": 11,
+      "qid": 728,
+      "arm": "roles",
+      "category": "regression",
+      "N": true,
+      "Q": true,
+      "F": true,
+      "S": "pass",
+      "G_reference_integrity": true,
+      "G_query_replay": true,
+      "G_narrative": false,
+      "U_count": 1,
+      "U_denominator": 46,
+      "overall_success": false,
+      "request_count": 4,
+      "input_tokens": 11019,
+      "output_tokens": 928,
+      "cost_cny": 0.029462,
+      "finish_attempts": 1,
+      "rejected_finish_attempts": 0,
+      "observed_primary_rows": [
+        [
+          "Blue",
+          126,
+          1
+        ],
+        [
+          "Brown",
+          89,
+          2
+        ],
+        [
+          "No Colour",
+          47,
+          3
+        ],
+        [
+          "Green",
+          40,
+          4
+        ],
+        [
+          "Red",
+          31,
+          5
+        ],
+        [
+          "Yellow",
+          13,
+          6
+        ],
+        [
+          "White",
+          12,
+          7
+        ],
+        [
+          "Black",
+          11,
+          8
+        ],
+        [
+          "Grey",
+          4,
+          9
+        ],
+        [
+          "Hazel",
+          3,
+          10
+        ],
+        [
+          "Purple",
+          2,
+          11
+        ],
+        [
+          "Gold",
+          2,
+          11
+        ],
+        [
+          "Yellow/Blue",
+          1,
+          13
+        ],
+        [
+          "White/Red",
+          1,
+          13
+        ],
+        [
+          "Violet",
+          1,
+          13
+        ],
+        [
+          "Silver",
+          1,
+          13
+        ],
+        [
+          "Green/Blue",
+          1,
+          13
+        ],
+        [
+          "Blue/White",
+          1,
+          13
+        ],
+        [
+          "Amber",
+          1,
+          13
+        ]
+      ]
+    },
+    {
+      "unit_id": "q733-roles",
+      "order": 12,
+      "qid": 733,
+      "arm": "roles",
+      "category": "regression",
+      "N": true,
+      "Q": true,
+      "F": true,
+      "S": "pass",
+      "G_reference_integrity": true,
+      "G_query_replay": true,
+      "G_narrative": true,
+      "U_count": 0,
+      "U_denominator": 1,
+      "overall_success": true,
+      "request_count": 3,
+      "input_tokens": 7423,
+      "output_tokens": 471,
+      "cost_cny": 0.018614,
+      "finish_attempts": 1,
+      "rejected_finish_attempts": 0,
+      "observed_primary_rows": [
+        [
+          2
+        ]
+      ]
+    },
+    {
+      "unit_id": "q765-roles",
+      "order": 13,
+      "qid": 765,
+      "arm": "roles",
+      "category": "regression",
+      "N": true,
+      "Q": true,
+      "F": true,
+      "S": "pass",
+      "G_reference_integrity": true,
+      "G_query_replay": true,
+      "G_narrative": true,
+      "U_count": 0,
+      "U_denominator": 4,
+      "overall_success": true,
+      "request_count": 4,
+      "input_tokens": 11539,
+      "output_tokens": 577,
+      "cost_cny": 0.027694,
+      "finish_attempts": 1,
+      "rejected_finish_attempts": 0,
+      "observed_primary_rows": [
+        [
+          127
+        ]
+      ]
+    }
+  ],
+  "data_attribution": "BIRD Team, BIRD-SQL Mini-Dev, https://huggingface.co/datasets/birdsql/bird_mini_dev ; CC BY-SA 4.0, https://creativecommons.org/licenses/by-sa/4.0/ . Adapted five-table projection with rows preserved. This is not an official BIRD score."
+}
