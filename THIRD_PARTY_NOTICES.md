@@ -7,8 +7,9 @@ license text. Contributors remain responsible for the rights to their additions.
 ## Runtime
 
 The investigator uses Python's standard library, including its SQLite interface.
-No third-party Python package, SQLite library, browser, font, media asset or
-external dataset is vendored in the source, wheel or source distribution.
+No third-party Python package, SQLite library, browser or external dataset is
+vendored. The Python wheel and source distribution do not bundle fonts or media
+assets; the repository's research PDF embeds the font subsets described below.
 Installed Python and SQLite implementations retain their own upstream licenses;
 this project's license does not replace them.
 
@@ -25,6 +26,33 @@ are hand-authored examples, not outputs from a paid model or experimental result
 These inputs contain no employer, patient or production records. Catalogs and
 fixture descriptions state their intended use. A synthetic declaration must not
 be applied to real data contributed later; document its origin and rights.
+
+## External evaluation data
+
+The [frozen live evaluation](data-investigation-agent/docs/live-evaluation.md)
+used an adapted five-table projection of the BIRD team's
+[Mini-Dev dataset](https://github.com/bird-bench/mini_dev).
+The [official dataset card](https://huggingface.co/datasets/birdsql/bird_mini_dev)
+identifies its license as [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+The evaluation summary records the upstream revision and adaptation scope.
+Neither that dataset nor its reference answers are redistributed here; the
+toolkit's Apache-2.0 license does not replace the dataset's license.
+
+## Research documentation and PDF fonts
+
+The newly authored [product technical report](docs/research/technical-report/README.md)
+and [historical research overview](docs/research/research-overview.md) are project
+documentation under the repository's Apache-2.0 license. The report is a draft
+by Yiting Feng, with no affiliation or conference acceptance claim. The separate
+overview does not reproduce or revalidate the earlier historical manuscript.
+
+The compiled report embeds subsets of the Latin Modern font family, copyright
+2003–2021 by B. Jackowski and J. M. Nowacki on behalf of TeX Users Groups. Those
+font programs retain the [GUST Font License](docs/research/technical-report/GUST-FONT-LICENSE.txt),
+which refers to the LaTeX Project Public License, version 1.3c or later. The
+repository's Apache-2.0 license does not replace the font or dataset licenses.
+pdfLaTeX and its packages are separately installed document-build tools; their
+source distributions are not bundled here.
 
 ## Build and repository tooling
 

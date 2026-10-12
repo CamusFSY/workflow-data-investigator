@@ -1,5 +1,12 @@
 # Data Investigation Agent
 
+Public-data preparation is documented in [public-data.md](docs/public-data.md).
+Its registry starts empty; existing synthetic examples remain unchanged.
+The separate [frozen live evaluation](docs/live-evaluation.md) reports a small
+adapted public-data comparison, including failures and reproducibility limits.
+The [WDI preparation guide](docs/wdi-smoke.md) prepares one pinned snapshot from
+existing raw API files and source records, without network or model calls.
+
 Read-only CSV/SQLite tools, an observable provider loop, and replayable evidence.
 The included demonstrations use **synthetic data and an explicitly scripted
 provider**. Runtime dependencies: Python 3.11+ standard library on Linux.
@@ -45,6 +52,7 @@ source distribution for `fixtures/`, or provide your own synthetic bundle.
 | `inspect --fixture DIR --out NEW_DIR` | Import and inspect a declared synthetic bundle, without any provider |
 | `validate --bundle DIR` | Check CSV files, schema, types and limits locally; JSON result, no provider |
 | `investigate --bundle DIR --responses FILE --out NEW_DIR` | Execute explicit offline response bodies through real tools; no new model decisions |
+| `investigate ... --answer-contract FILE` | Opt into explicit answer/support roles and a caller-frozen result shape |
 | `replay DIR` | Verify a recorded run using the installed runtime |
 | `python3 DIR/replay.py` | Use that run's bundled runtime; preferred for historical outputs |
 | `run ... --mode live` | Stop with `LIVE_TRANSPORT_REQUIRED`; no credentials or model calls |
@@ -84,7 +92,8 @@ requires explicit `allow_data_sharing=True`;
 the caller still owns client configuration, retries, timeouts and costs.
 The [public offline example](examples/recorded_investigation.py) and
 [configured-client example](examples/configured_client.py) show both paths.
-They are tested offline; no end-to-end live provider run is claimed.
+Those examples are tested offline. The separate [live evaluation](docs/live-evaluation.md)
+covers one model configuration and does not validate every SDK/client path.
 
 | Tool | Use |
 |---|---|
@@ -100,6 +109,11 @@ Generic rate results use `successes`, `non_successes`, `source_columns` and
 [Compatibility details](docs/neutral-rate-compatibility.md) explain the change.
 The tool contract cannot guarantee the truth of untyped prose or the authority
 of a business definition.
+
+Python callers and the recorded CLI may opt into a [caller-frozen answer contract](docs/evidence-roles.md)
+to select one `answer_evidence_id` and separate `supporting_evidence_ids`.
+It checks source, types and result shape, leaving numerical correctness to an
+independent evaluator. Omitting the option preserves the existing interface.
 
 ## Fixtures, tests and troubleshooting
 

@@ -1,0 +1,179 @@
+\documentclass[10pt,twocolumn,letterpaper]{article}
+\usepackage[margin=0.76in,columnsep=0.27in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,microtype}
+\usepackage{amsmath,amssymb,booktabs,array,enumitem,graphicx}
+\usepackage[hyphens]{url}
+\usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue!50!black]{hyperref}
+\usepackage{xcolor,fancyhdr,titlesec,balance}
+\setlength{\headheight}{14pt}
+\pagestyle{fancy}\fancyhf{}
+\fancyhead[L]{\footnotesize Workflow Data Investigator}
+\fancyhead[R]{\footnotesize Technical report draft}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\setlength{\parskip}{1pt}
+\raggedbottom
+\titleformat{\section}{\large\bfseries\raggedright}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries\raggedright}{\thesubsection}{0.6em}{}
+\setlist{nosep,leftmargin=*}
+\titlespacing*{\section}{0pt}{10pt}{5pt}
+\titlespacing*{\subsection}{0pt}{7pt}{3pt}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcommand{\code}[1]{\texttt{#1}}
+\hypersetup{pdftitle={Evidence Roles and Answer Contracts in Data Analysis Agents},pdfauthor={Yiting Feng},pdfsubject={A small same-build validation of Workflow Data Investigator; technical report draft}}
+\title{\vspace{-1.4em}\Large\bfseries Evidence Roles and Answer Contracts\newline in Data Analysis Agents\vspace{0.25em}\newline\normalsize A Small Same Build Validation of Workflow Data Investigator}
+\author{Yiting Feng\\[2pt]\small GitHub: CamusFSY}
+\date{12 October 2026\newline\small Technical report draft}
+\begin{document}
+\maketitle
+\thispagestyle{plain}
+\begin{abstract}
+A data-analysis agent can return a correct value in an unsuitable artifact, or attach an inaccurate explanation to a correct result. We evaluate an optional interface that separates one answer query from supporting evidence and checks a caller-frozen output-shape contract. A same-build comparison uses three prospective question families from an adapted BIRD Mini-Dev database, with one trial per mode and family. Explicit roles and contracts achieve strict end-to-end success on 3/3 families, versus 2/3 in legacy mode. Both modes answer all three substantive questions correctly. The difference is one structural repair: legacy mode returns a correct identifier in a two-column result where the frozen contract requires one column, leaving the primary result unverifiable under that rule. Explicit mode repairs the same shape error within its original trial. It uses 14 requests and CNY 0.102346, compared with 11 requests and CNY 0.079332 for legacy mode. Across the prospective comparison and the separately labeled diagnostic, smoke, and regression panels, all 13 declared trials finish; all 29 distinct captured SQL results replay correctly. A regression nevertheless contradicts its correct ranking in prose. The evidence supports a narrow contract-compliance observation, not an arithmetic-accuracy advantage, statistical superiority, or general reliability claim.
+\end{abstract}
+
+\noindent\textbf{Status and scope.} This newly written technical report covers the 12 October 2026 product-interface study only. Historical experiments are not pooled with these trials. It is a research draft with no claim of conference acceptance or peer review. The evaluated source is commit \href{https://github.com/CamusFSY/workflow-data-investigator/commit/a18a07061ea7b9a3e1950b4527e36e266d17b487}{\code{a18a070}}. No earlier manuscript is represented as revised or revalidated by this report.
+
+\section{Introduction}
+A useful data-analysis report must satisfy several requirements at once. The selected result must answer the requested question, the submitted artifact must have the required form, and the explanation must be supported by the available evidence. Successful SQL execution establishes none of these properties on its own. A query may execute successfully while returning an extra column, answering a different question, or providing insufficient support for a narrative inference.
+
+Workflow Data Investigator exposes an optional answer contract and explicit evidence roles~\cite{wdidocs}. The caller fixes the expected column names, value types, nullability, and row-count bounds before a run. The agent identifies one successful query as its answer and lists other evidence separately as support. This interface makes primary-result selection inspectable and can reject a malformed submission early enough for the agent to repair it within the original resource limits.
+
+The interface deliberately does not contain expected numerical values or reference SQL. It therefore cannot determine that a structurally valid answer is correct. Nor does a valid supporting-evidence identifier prove that a statement follows from that evidence. These distinctions are central to the present evaluation: one observed benefit concerns artifact structure, while one remaining failure concerns prose attached to a correct table.
+
+The question is whether this combined interface, contract, and instruction change yields more complete supported reports than the legacy finish interface on the same source build. We do not isolate the separate causal effects of evidence-role names, contract checking, or changed instructions. The evaluation is a small engineering study, with three fresh question families in one known public database and separate, explicitly labeled development panels.
+
+The report contributes an inspectable interface description, a bounded same-build comparison, and a reconciliation of structural acceptance, numerical verification, and narrative review. It does not introduce or evaluate a new learning algorithm. It does not claim a new theoretical guarantee, an official BIRD score, or evidence of external adoption.
+
+\section{Interface and verification boundaries}
+\subsection{One answer and separate support}
+In explicit mode, a submitted answer identifies exactly one current-run query result as the primary answer. Supporting sources are listed separately and may include other queries, context reads, schema inspection, analysis, or plots. Query evidence must be successful and complete. The primary answer must also conform to the caller's frozen contract. Missing or unknown identifiers, context offered as the answer, and repeated or conflicting role assignments are rejected according to the interface rules~\cite{wdidocs}.
+
+The caller sets the contract before the first model request. The contract is validated and copied; later mutation of the caller's original object does not change the run. Neither the model's output nor a document in the input bundle can redefine the contract. The public interface supports exact ordered column names, integer/number/string value types, nullability, and minimum and maximum row counts. These checks do not specify filtering semantics, ranking rules, distinctness, or expected values.
+
+For example, a task can require a one-row result with a single \code{publisher\_id} column. Returning the correct identifier alongside a publisher-name column is still a contract violation. Conversely, a one-row integer with the wrong identifier can satisfy the contract. The two failures require different measurements.
+
+\subsection{Recoverable rejection}
+A validly encoded rejected finish is returned as an ordinary tool observation with an error code, field, and message. During a normal turn, the agent may repair it using the remaining original budget. Rejection does not create additional requests or extend a deadline. A rejection in the terminal finish-only phase ends the run under the existing runtime rules~\cite{wdidocs}.
+
+The implementation preserves rejected attempts and independently valid unresolved questions or assumptions. A structurally invalid submission must not erase a previously recorded blocker merely because a later submission omits it. This is an engineering state-handling property, not a guarantee that the agent detects every missing assumption.
+
+\subsection{A limited formal view}
+Let $E$ be the current run's evidence records, $p\in E$ the agent-selected primary query, and $C$ the caller-frozen shape contract. Define $V(p,C)$ to require a successful, untruncated query whose columns, types, nullability, and row count meet $C$. Structural validation checks $V$; it does not compare $p$ with a reference answer.
+
+The evaluation separately records native finish acceptance $F$, structural eligibility $S$, numerical verification $N$, full-question completion $Q$, and grounding $G$. It also checks whether any unsupported or contradicted narrative claim is present, denoted $U>0$, and whether policy/resource rules were respected. Strict end-to-end success requires all these requirements to pass. An ineligible primary leaves $N$ unverifiable under the frozen selection rule; it is not silently replaced by a better earlier query or by correct prose.
+
+Two elementary counterexamples explain the separation. A wrong scalar of the correct type can pass $V$ while failing $N$. A correct ranking can pass $N$ while its summary miscounts a group and fails $G$. These are scope observations, not novel theorems or formal verification of the software. The second failure appears in the recorded regression panel.
+
+\section{Study design}
+\subsection{Same build and declared panels}
+Both modes use the complete source commit \code{a18a07061ea7b9a3e1950b4527e36e266d17b487}. The design compares legacy finish behavior with the combined explicit-role and caller-contract interface. Modes, case order, contracts, and resource caps were declared before the evaluated phase. There is one trial per assigned mode and task. The run used the provider alias \code{deepseek-flash}, temperature 0, disabled thinking, no specified seed, no specified top-$p$, automatic tool choice, and non-streaming responses. The alias is not an immutable model version.
+
+The data is an adapted five-table projection from BIRD-SQL Mini-Dev, with source rows preserved. The public dataset is attributed to the BIRD Team and identified as CC BY-SA 4.0~\cite{birdminidev}. This adapted, deliberately small setting is not the official benchmark and is not compared with its leaderboard. The database was already known during development; ``prospective'' here describes the declared fresh question families in this phase, not an unseen database or protection against model-training contamination.
+
+The 13 declared trials comprise four panels:
+\begin{itemize}
+\item Three prospective families, 744, 745, and 800, each run once in each mode: six trials.
+\item A related sign-consistency diagnostic, 829, run in both modes: two trials. It is related to 744 and is not a fourth independent family.
+\item One exposed smoke task, 764, run in explicit mode.
+\item Four exposed regression tasks, 723, 728, 733, and 765, run in explicit mode.
+\end{itemize}
+The prospective comparison has three paired families, not thirteen. Smoke, related diagnostics, and previously exposed regressions are retained for transparency but excluded from the fresh-family denominator. Historical October 11 full/minimal strict scores of 2/4 versus 3/4 remain unchanged and are not pooled with this phase.
+
+\subsection{Scoring and independent checks}
+The main-result grade compares the selected eligible primary with the frozen reference. Structure is scored separately. Correctness of the substantive answer can be assessed as a labeled diagnostic even when a selected artifact fails the shape rule, but it cannot retroactively supply a passing primary. This policy prevents an evaluator from selecting whichever query makes an otherwise failed run look successful.
+
+The mechanical review rehashed 62 evidence objects and six answer contracts, checked that cited identifiers resolved within their own trial, retained all finish attempts, and corroborated accepted-finish flags against terminal tool results. All 29 distinct captured SQL results were replayed read-only against the verified projection and matched as typed multisets. Ordering requirements were checked without imposing an arbitrary order on ranking ties.
+
+Narrative evaluation was AI-assisted and blinded to mode/status labels. It examined full-question completion and decomposed explanations into 114 distinct claim atoms. This is not human expert annotation or perfect blinding: content can reveal related cases. Six grain/key claims relied on available background source context rather than a separately cited verification query. Documented source keys were distinguished from constraints not recreated during CSV import.
+
+\begin{table*}[t]
+\centering\small
+\caption{Prospective comparison on three distinct question families per mode. The difference concerns structural eligibility, not an observed wrong numerical answer. Costs are recorded model-use estimates in CNY.}
+\label{tab:primary}
+\begin{tabular}{L{0.54\textwidth}rr}
+\toprule
+Measurement & Legacy & Explicit roles and contract\\
+\midrule
+Verified selected main results & 2/3 & 3/3\\
+Unverifiable selected main results & 1/3 & 0/3\\
+Incorrect eligible selected main results & 0 & 0\\
+Complete substantive answers & 3/3 & 3/3\\
+Native accepted finishes & 3/3 & 3/3\\
+Conforming selected primary results & 2/3 & 3/3\\
+Reports with unsupported claims & 0/3 & 0/3\\
+Strict end-to-end success & 2/3 & 3/3\\
+Model requests & 11 & 14\\
+Recorded model cost in CNY & 0.079332 & 0.102346\\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\section{Results}
+\subsection{One prospective structural difference}
+Explicit mode passes strict end-to-end evaluation in 3/3 prospective families; legacy mode passes in 2/3 (Table~\ref{tab:primary}). The paired outcomes are one explicit-mode win and two ties. Both modes provide complete correct substantive answers, and neither has an unsupported prospective narrative claim under the review. There is no demonstrated arithmetic-accuracy improvement.
+
+In task 745, the frozen answer requires the \code{publisher\_id} column alone. Explicit mode initially submits a two-column result, receives a contract rejection, and repairs the answer within the same trial. Legacy mode accepts a two-column result containing the correct identifier and publisher name. Its final cited identifier, 20, and final prose are correct as a separate diagnostic. However, the frozen primary-selection rule finds no eligible one-column main artifact. Its structural and main-result grades therefore remain unverifiable rather than incorrect.
+
+The result illustrates both the value and the cost of enforcing an output contract. Without the contract, a consumer expecting one column receives a different artifact. With the contract, the agent can correct that interface failure before termination. Whether this additional enforcement is useful in another application depends on that application's downstream requirements and cost tolerance; the present sample does not establish an optimal policy.
+
+\subsection{A correct ranking with incorrect prose}
+All four exposed regression tasks have correct selected results and complete substantive answers. They also pass native finish acceptance and the frozen shape checks. Strict end-to-end success is nevertheless 3/4 because task 728's summary contradicts the complete ranking.
+
+The ranking has 19 rows. Seven colours have count 1: Yellow/Blue, White/Red, Violet, Silver, Green/Blue, Blue/White, and Amber. The summary says that six colours are tied at count 1. The requested ranking remains present and correct, so full-question completion passes. The contradicted summary causes the unsupported-claim and narrative-grounding checks to fail.
+
+This is not a hidden numerical-result error and should not be repaired by changing the definition of the endpoint. The table, detailed finding, and summary are distinct parts of the submitted report. A consumer may rely on the summary rather than recount the table. An accepted finish and reproducible query therefore do not certify the entire report's accuracy.
+
+\subsection{Other panels and retained failures}
+Both modes pass the related sign-consistency diagnostic 829. The exposed smoke task 764 also passes. Descriptively across all 13 mixed-panel trials, native finish acceptance is 13/13, structural eligibility is 12/13, all 12 eligible selected results match references, full-question completion is 13/13, and strict end-to-end success is 11/13. These mixed totals are not an ablation comparison because the panel assignments differ.
+
+There are 17 finish attempts and four recoverable in-trial rejections: three duplicate-support-ID errors and one answer-column mismatch. All remain in the record. There were no paid trial reruns and no recorded API retries. A corrected in-trial submission is ordinary recovery within the declared trial, not a replacement sample chosen after a failure.
+
+The narrative review identifies 113 supported claim atoms and one contradicted atom among 114, or 0.88\% under this atomization. The one contradictory report contributes 46 atoms. Counts at the atom and report levels answer different questions: one contradicted atom is enough for that report to fail strict grounding. Neither the atom rate nor the mixed report denominator estimates a population error rate.
+
+\section{Cost and audit coverage}
+\subsection{Observed resource use}
+The six prospective trials use 11 requests in legacy mode and 14 in explicit mode. Their recorded costs are CNY 0.079332 and CNY 0.102346, respectively. Explicit mode therefore uses three additional requests and CNY 0.023014 more in this small comparison. The result must not be presented as a free accuracy gain or a demonstrated cost saving.
+
+All 13 trials use 53 model requests, 153,782 input tokens, and 8,557 output tokens. At the recorded rates of CNY 2 per million input tokens and CNY 8 per million output tokens, the phase estimate is CNY 0.376020. Rejected finish attempts consume ordinary within-trial resources and are included. These amounts describe recorded model use, not a current price quote, provider invoice, or total development and review cost. Request wall times were unavailable, so no latency comparison is made.
+
+\subsection{What the audit establishes}
+Replay supports the claim that the captured results can be reproduced against the verified projection. Hash and reference checks support internal consistency of the reviewed evidence export. Independent primary selection preserves the frozen scoring rule, and narrative review catches a contradiction that interface checks alone do not.
+
+The audit used a compact evidence export containing final cited evidence, all finish submissions, rejected submissions, and their object hashes. It did not recompute the original full-export hash, and routine audit envelopes were omitted. Independent arrays of provider request envelopes and tool schemas were not present. Equal-setting checks therefore rely on frozen configuration provenance and observed mode behavior rather than reconstruction of every provider wire request. The evaluation protocol and execution protocol are separately maintained documents and are not asserted to be byte-identical.
+
+This report provides the verified aggregate outcomes and methodological limits. It does not reproduce every original prompt, case packet, or full provider transcript, and should not be described as a complete independently rerunnable study package. The source commit and interface documentation identify the implemented mechanism; a future public evaluation package would also need licensed input transformations, exact configuration, contracts, traces, frozen references, and scoring code with their version bindings.
+
+\section{Relationship to prior work}
+Natural-language interfaces to databases already study ambiguity and interaction. AmbiQT constructs multiple plausible SQL interpretations~\cite{ambi}; PRACTIQ includes conversational clarification and some useful answers covering multiple interpretations~\cite{practiq}; CLARITY examines interactive ambiguity and incomplete clarification~\cite{clarity}. These precedents rule out treating the mere use of clarification or multiple interpretations as a new contribution.
+
+The present product study addresses a narrower engineering question about evidence selection and output contracts after a data-analysis workflow. It does not reproduce these research systems or compare their benchmark scores. A separate historical clarification pilot motivates distinguishing user intent from downstream computations, but has different tasks, endpoints, traces, and limitations. It is not evidence for the present comparison and is not needed to interpret this report.
+
+\section{Limitations and next validation}
+\paragraph{Small and narrow sample.} The fresh comparison has three families from one already-known public database, with one trial per mode. Fresh answers are scalar; multirow and ranking coverage comes from exposed development cases. No statistical significance, broad superiority, cross-database generalization, or absence of training contamination is established.
+
+\paragraph{Combined intervention.} Explicit roles, the frozen contract, and corresponding instructions change together. The comparison cannot attribute the observed repair to any one component. It is a same-build comparison, not a historical before-and-after claim. Temperature 0 without a seed and with an unversioned model alias does not establish deterministic future reproduction.
+
+\paragraph{Limited semantic guarantees.} Runtime checks validate references and structure. They do not prove result correctness, evidence relevance, authoritative intent, causal interpretation, or prose consistency. The ranking regression is a concrete surviving failure. The AI-assisted review is not human expert validation; atomization and background context affect the interpretation of its counts.
+
+\paragraph{Incomplete transport and timing evidence.} The reviewed export supports the recorded result and finish checks but not a byte-for-byte reconstruction of every provider request. Wall-time and latency data are absent. Model-use charges omit development, annotation, and infrastructure costs. These omissions should remain visible in any public summary.
+
+\paragraph{Next evidence needed.} After changes informed by these failures, a new round should prospectively declare fresh tasks, modes, contracts, budgets, and scoring. It should include independently constructed multirow cases, multiple databases, repeated trials where stochastic variation matters, and separate numerical, structural, and narrative outcomes. Component ablations and a stronger record of transport/configuration would clarify mechanism and reproducibility. These are proposed checks, not experiments already completed.
+
+\section{Conclusion}
+The evaluated contract catches an answer-shape mismatch and supports repair within one original trial. It also leaves a correct ranking vulnerable to an inaccurate summary. The useful engineering lesson is to make numerical verification, structural completion, and narrative grounding separately inspectable. The observed 3/3 versus 2/3 prospective outcome is evidence of one structural-compliance difference at additional request cost. It is not evidence of improved arithmetic accuracy or a general reliability guarantee.
+
+\section*{Data attribution}
+The adapted five-table input projection is derived from BIRD-SQL Mini-Dev by the BIRD Team~\cite{birdminidev}, which lists CC BY-SA 4.0~\cite{ccbysa}. This report identifies the adaptation and its source. No official BIRD score, endorsement, or collaboration is implied. Any redistributed adapted data must retain its own attribution and license notices; the software repository's license does not replace the data license.
+
+\balance
+\begin{thebibliography}{9}\small
+\bibitem{wdidocs} Workflow Data Investigator. 2026. \emph{Optional caller-frozen answer contract}. Documentation at evaluated commit \code{a18a070}. \href{https://github.com/CamusFSY/workflow-data-investigator/blob/a18a07061ea7b9a3e1950b4527e36e266d17b487/data-investigation-agent/docs/evidence-roles.md}{GitHub source documentation}.
+\bibitem{birdminidev} BIRD Team. \emph{BIRD-SQL Mini-Dev}. Dataset card. \url{https://huggingface.co/datasets/birdsql/bird_mini_dev}. Accessed 12 October 2026.
+\bibitem{ccbysa} Creative Commons. \emph{Attribution-ShareAlike 4.0 International}. \url{https://creativecommons.org/licenses/by-sa/4.0/}.
+\bibitem{ambi} Adithya Bhaskar, Tushar Tomar, Ashutosh Sathe, and Sunita Sarawagi. 2023. Benchmarking and Improving Text-to-SQL Generation under Ambiguity. \emph{EMNLP}, 7053--7074. \href{https://aclanthology.org/2023.emnlp-main.436/}{doi:10.18653/v1/2023.emnlp-main.436}.
+\bibitem{practiq} Mingwen Dong et al. 2025. PRACTIQ: A Practical Conversational Text-to-SQL dataset with Ambiguous and Unanswerable Queries. \emph{NAACL}, 255--273. \href{https://aclanthology.org/2025.naacl-long.13/}{doi:10.18653/v1/2025.naacl-long.13}.
+\bibitem{clarity} Tabinda Sarwar et al. 2026. CLARITY: A Framework and Benchmark for Conversational Language Ambiguity and Unanswerability in Interactive NL2SQL Systems. \emph{ACL Industry Track}, 1218--1250. \href{https://aclanthology.org/2026.acl-industry.86/}{doi:10.18653/v1/2026.acl-industry.86}.
+\end{thebibliography}
+
+\end{document}

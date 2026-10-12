@@ -11,13 +11,19 @@ from investigator.providers import ChatCompletionsProvider
 
 def investigate_with_client(client, *, model, bundle, output, goal,
                             allow_data_sharing=False, max_steps=12,
-                            max_tool_actions=24, max_seconds=60):
+                            max_tool_actions=24, max_seconds=60, thinking=None,
+                            max_output_tokens=2048, answer_contract=None):
     def transport(request, *, timeout_seconds):
+        # Raw Chat Completions JSON uses thinking at the top level; the SDK uses extra_body.
+        request = dict(request)
+        if "thinking" in request:
+            request["extra_body"] = {"thinking": request.pop("thinking")}
         return client.chat.completions.create(**request, timeout=timeout_seconds)
 
     provider = ChatCompletionsProvider(
         transport, model=model, allow_data_sharing=allow_data_sharing,
-        max_output_tokens=2048,
+        max_output_tokens=max_output_tokens, thinking=thinking,
     )
     return run(goal, bundle, output, provider, max_steps=max_steps,
-               max_tool_actions=max_tool_actions, max_seconds=max_seconds)
+               max_tool_actions=max_tool_actions, max_seconds=max_seconds,
+               answer_contract=answer_contract)

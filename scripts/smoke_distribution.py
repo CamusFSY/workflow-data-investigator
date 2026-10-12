@@ -29,6 +29,17 @@ def provider_examples(python, executable, command, root):
     replay = command([python, "-I", str(output / "replay.py")])
     assert "9 tool results" in replay
 
+    role_output = root / "custom-answer-roles"
+    command([executable, "investigate", "--bundle", str(bundle),
+             "--responses", str(examples / "simulation_role_responses.json"),
+             "--answer-contract", str(examples / "simulation_answer_contract.json"),
+             "--out", str(role_output)])
+    role_report = json.loads((role_output / "report.json").read_text())
+    assert role_report["status"] == "answered" and role_report["tool_actions"] == 9
+    assert role_report["answer"]["answer_evidence_id"] == "e006"
+    assert role_report["answer"]["supporting_evidence_ids"] == ["e002", "e003", "e007", "e008"]
+    assert "CALLER-FROZEN ANSWER ROLES" in command([python, "-I", str(role_output / "replay.py")])
+
     # Only checked-in developer documentation is executable here. This is a test
     # of the exact public Python example, not a model-written-code capability.
     doc = (ROOT / "data-investigation-agent/docs/provider-integration.md").read_text()
@@ -69,6 +80,20 @@ with patch.object(ChatCompletionsProvider, "mode", "mock-scripted"), \\
     second = configured(client, model="offline-sdk-contract", bundle=bundle,
                         output=outroot / "configured-client", goal="Offline SDK double",
                         allow_data_sharing=True)
+    role_contract = json.loads(example.with_name("simulation_answer_contract.json").read_text())
+    role_responses = example.with_name("simulation_role_responses.json")
+    transport = RecordedTransport(role_responses)
+    third = configured(client, model="offline-sdk-roles", bundle=bundle,
+                       output=outroot / "configured-roles", goal="Offline role double",
+                       allow_data_sharing=True, answer_contract=role_contract)
+    fourth = investigate(RecordedTransport(role_responses), model="offline-callback-roles",
+                         bundle=bundle, output=outroot / "documented-roles", goal="Offline roles",
+                         allow_data_sharing=True, answer_contract=role_contract)
+    for result, name in [(third, "configured-roles"), (fourth, "documented-roles")]:
+        assert result["status"] == "answered" and result["live_request_attempts"] == 0
+        assert result["answer"]["answer_evidence_id"] == "e006"
+        assert result["answer"]["supporting_evidence_ids"] == ["e002", "e003", "e007", "e008"]
+        assert verify(outroot / name) == 9
     for result, name in [(first, "documented-callback"), (second, "configured-client")]:
         assert result["status"] == "answered" and result["tool_actions"] == 9
         assert result["live_request_attempts"] == 0
@@ -80,7 +105,8 @@ print("INSTALLED PROVIDER CONTRACTS VERIFIED; offline doubles only; zero API cal
                          str(examples / "configured_client.py"), str(root)])
     assert "INSTALLED PROVIDER CONTRACTS VERIFIED" in contracts
     return {"mode": "offline-recorded", "validation": "valid", "tool_actions": 9,
-            "replay": replay.strip(), "documented_callback_and_sdk_double": "passed; no live validation"}
+            "replay": replay.strip(), "documented_callback_and_sdk_double": "passed; no live validation",
+            "answer_contract_cli_callback_and_sdk": "passed; shape and references only"}
 
 
 def main():

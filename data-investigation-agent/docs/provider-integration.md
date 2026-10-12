@@ -76,13 +76,14 @@ from investigator.loop import run
 from investigator.providers import ChatCompletionsProvider
 
 def investigate(transport, *, model, bundle, output, goal,
-                allow_data_sharing=False):
+                allow_data_sharing=False, answer_contract=None):
     provider = ChatCompletionsProvider(
         transport, model=model, allow_data_sharing=allow_data_sharing,
         max_output_tokens=2048,
     )
     return run(goal, bundle, output, provider,
-               max_steps=12, max_tool_actions=24, max_seconds=60)
+               max_steps=12, max_tool_actions=24, max_seconds=60,
+               answer_contract=answer_contract)
 ```
 
 This exact adapter contract is tested offline. `allow_data_sharing=True` must be
@@ -90,16 +91,27 @@ an explicit caller decision; without it the adapter fails before transport use.
 The [configured-client example](../examples/configured_client.py) accepts an
 already configured `client.chat.completions.create(...)` interface and passes
 the remaining timeout to it. Importing the example does nothing. Its installed-
-wheel contract is tested with an SDK double; **no end-to-end live run has been
-validated**. The caller supplies the SDK/client configuration and credentials
+wheel contract is tested with an SDK double. A separate [live evaluation](live-evaluation.md)
+covers one `deepseek-flash` configuration; it does not certify every SDK/client
+path or backend. The caller supplies the SDK/client configuration and credentials
 locally; they are not toolkit arguments or exported evidence.
+
+All three Python entry points above, including the legacy budget-reference callback
+example, accept an optional `answer_contract`. Supply a caller-owned dictionary
+or load an explicitly selected file with
+`investigator.evidence.load_answer_contract(path)`. The runner freezes it before
+any provider request. See [answer evidence and shape](evidence-roles.md) for the
+schema, recorded CLI example and compatibility limits. No model-visible document
+can enable or replace this option. Shape validation does not assess numerical
+correctness, support relevance or free-text claims.
 
 Before opting in, review the goal, catalog and metric/query/request documents,
 schema, SQL text, returned rows, analysis and prior conversation: these can be
 sent to your configured endpoint as the model requests tools. Raw CSV files are
 not directly attached, but SQL results can disclose their contents over multiple
-turns. There is no redaction/anonymization or domain allowlist. Use synthetic
-inputs only in this version. Inspect the recipient endpoint and its data policy
+turns. There is no redaction/anonymization or endpoint-domain allowlist. Use
+synthetic inputs or an explicitly reviewed [public snapshot](public-data.md).
+The public snapshot registry is currently empty. Inspect the recipient endpoint and its data policy
 in the client you configure; the toolkit cannot inspect a trusted callback's
 hidden behavior. No data is automatically sent during validation or offline use.
 
@@ -142,6 +154,56 @@ parent_budget_reference=...)`. It preserves the legacy callback's
 `budget_reference` keyword. This optional identifier refers to the caller's own
 accounting. New users should start with the neutral adapter above; its public
 signature has no budget-reference parameter.
+
+## Explicit DeepSeek non-thinking smoke
+
+The generic adapter defaults to `thinking=None` and sends no vendor-specific
+thinking options. For a DeepSeek smoke, explicitly use `thinking="disabled"`:
+
+```python
+provider = ChatCompletionsProvider(
+    authorized_transport, model=caller_selected_model,
+    allow_data_sharing=True, max_output_tokens=512, thinking="disabled",
+)
+```
+
+The callback receives top-level `"thinking": {"type": "disabled"}` in each raw
+request. Preserve it alongside messages, tools and the remaining timeout.
+`DeepSeekProvider(..., parent_budget_reference=existing_reference,
+thinking="disabled", max_output_tokens=512)` preserves the existing accounting
+callback's `budget_reference` keyword; this does not create a budget or ledger.
+
+The [configured-client wrapper](../examples/configured_client.py) accepts the
+same optional `thinking="disabled"` and maps it to
+`extra_body={"thinking": {"type": "disabled"}}` for an already configured SDK
+client. It does not change client credentials, retries or the endpoint. Configure
+SDK retries explicitly in the owning caller; the wrapper and adapter make one
+transport invocation per provider attempt and do not retry exceptions.
+
+The wrapper also accepts `max_output_tokens=1024` and `max_steps=8` as explicit
+caller overrides; defaults stay compatible. `max_steps` bounds provider requests,
+not a token or money budget. The local context byte ceiling is not a proven
+input-token ceiling. A caller that needs a monetary limit must reserve a sound
+worst-case request cost before dispatch, settle actual usage serially, and stop
+before dispatch if the remaining authorization cannot cover that reservation.
+Do not turn a desired run count into a promise that the monetary cap can fund it.
+
+Official [request documentation](https://api-docs.deepseek.com/api/create-chat-completion/)
+and [thinking/tool-call guidance](https://api-docs.deepseek.com/guides/thinking_mode/)
+were checked on 2026-10-11. Thinking is enabled by default there. Thinking-enabled
+tool histories require forwarding private reasoning fields; this loop removes
+those fields and therefore **does not support that mode**. Explicit `enabled`
+is rejected by this adapter. The disabled request flag is recorded as a request
+setting, not proof of server behavior. Private reasoning is not persisted or
+displayed. No strict-beta endpoint/schema conversion is introduced; current
+schemas contain optional fields and use the regular tool-calling contract.
+
+The request options, feedback IDs, single invocation on exceptions and absence
+of private reasoning are tested using offline doubles. Those checks alone do
+not verify live API compatibility or costs. The [live evaluation](live-evaluation.md)
+reports a bounded configuration and estimated costs, not general compatibility
+or audited billing. Further live checks require the caller's configured transport
+and cost controls.
 
 ## Trusted host and interpretation boundaries
 
